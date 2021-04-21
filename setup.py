@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """Independet module for inialiting the environment, it has be ran only once (per environment) before anything else
 1. It assumes that PosgresSQL is up and running and we have administratitve authorization
 2. It assumes that Kafka is up and running and we have administratitve authorization
@@ -8,12 +9,19 @@
 
 import logging
 import psycopg2
+from psycopg2 import extras
 import sys
 from src.config import Config
 
 log = logging.getLogger(__name__)
 # set to DEBUG for early-stage debugging
 log.setLevel(logging.INFO)
+
+
+class SetupError(Exception):
+    """Minimal exception class for raising controlled errors"""
+
+    pass
 
 
 def init_logging():
@@ -60,13 +68,16 @@ def initialize_metrics_store(
         db_table (string): Name of the DB hypertable where metrics will be stored
         number_partitions (int, optional): Number of partitions for `db_table` . Defaults to 4.
         chunk_time_interval (str, optional): How long in time will chunk metrics data. Defaults to "1 week".
+    Raises:
+        SetupError: If DB resources are not properly created
     """
+
     try:
         db_connect = psycopg2.connect(db_uri)
-        with db_connect.cursor() as db_cursor:
-            log.info("Creating the TimescaleDB extension")
+        with db_connect.cursor(cursor_factory=extras.RealDictCursor) as db_cursor:
+            log.info("- Enabling TimescaleDB extension")
             db_cursor.execute("CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE")
-            log.info(f"Creating table for metrics: {db_table}")
+            log.info(f"- Creating table for metrics: {db_table}")
             db_cursor.execute(
                 f"""CREATE TABLE IF NOT EXISTS {db_table} (
                         time         TIMESTAMPTZ       NOT NULL,
@@ -76,7 +87,9 @@ def initialize_metrics_store(
                         regex_match  BOOLEAN           NULL
                     )"""
             )
-            log.info(f"Turn '{db_table}' hypertable partitioned by time and web_url")
+            log.info(
+                f"- Turning '{db_table}' to a hypertable partitioned by 'time' and 'web_url'"
+            )
             db_cursor.execute(
                 f"""SELECT create_hypertable(
                         '{db_table}',
@@ -87,14 +100,29 @@ def initialize_metrics_store(
                     )"""
             )
 
+            db_cursor.execute(
+                f"SELECT * FROM _timescaledb_catalog.hypertable WHERE table_name='{db_table}'"
+            )
+            # Check in database catalog the metainformation of our table
+            hypertable_result = db_cursor.fetchone()
+
     except (Exception, psycopg2.Error):
-        logging.exception("TimescaleDB extension could not be crated")
+        log.exception("TimescaleDB extension could not be crated")
     else:
         db_connect.commit()
-        logging.info("Database ready for storing metrics, all resources crated")
     finally:
         if db_connect:
             db_connect.close()
+
+    log.debug(
+        f"Information about our table in '_timescaledb_catalog.hypertable':\n\t{hypertable_result}"
+    )
+    if (hypertable_result == None) or (hypertable_result["num_dimensions"] != 2):
+        raise SetupError(
+            f"Something wrong with previous definitions, '{db_table}' is not a hypertable or does not have two dimension"
+        )
+    else:
+        log.info("Database ready for storing metrics, all resources crated")
 
 
 def main():
@@ -108,4 +136,4 @@ if __name__ == "__main__":
     try:
         main()
     except Exception as e:
-        logging.exception("Raised exception to main")
+        log.exception("Raised exception to main")
