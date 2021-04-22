@@ -11,7 +11,8 @@ from src.config import Config
 from dateutil import tz
 
 # TODO: Implement inserts in DB, see: https://hakibenita.com/fast-load-data-python-postgresql
-log = logging.getLogger(__name__)
+log = logging.getLogger("homeworks")
+log.setLevel(logging.INFO)  # set to DEBUG for early-stage debugging
 
 
 def init_logging():
@@ -67,7 +68,6 @@ def main():
 
 if __name__ == "__main__":
     init_logging()
-    log.setLevel(logging.INFO)  # set to DEBUG for early-stage debugging
 
     try:
         main()

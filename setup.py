@@ -13,7 +13,7 @@ from psycopg2 import extras
 import sys
 from src.config import Config
 
-log = logging.getLogger(__name__)
+log = logging.getLogger("homeworks")
 # set to DEBUG for early-stage debugging
 log.setLevel(logging.INFO)
 
@@ -131,8 +131,8 @@ def main():
 
 
 if __name__ == "__main__":
-    config = Config()
     init_logging()
+    config = Config()
     try:
         main()
     except Exception as e:

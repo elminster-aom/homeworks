@@ -3,7 +3,7 @@
 import dotenv
 import logging
 
-log = logging.getLogger(__name__)
+log = logging.getLogger("homeworks")
 
 
 class Config:
