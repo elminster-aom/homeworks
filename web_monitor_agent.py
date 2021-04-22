@@ -1,16 +1,12 @@
-import datetime
-import re
+# import daemon
 import logging
-import requests
 import sys
 
-# import src.logging_console as logging_console
 from src.config import Config
-
-# See: How to create tzinfo when I have UTC offset? https://stackoverflow.com/a/28270767
-from dateutil import tz
+from src.get_request_thread import Get_request_thread
 
 # TODO: Implement inserts in DB, see: https://hakibenita.com/fast-load-data-python-postgresql
+# TODO: Implement as a daemon, e.g. daemon.DaemonContext()
 log = logging.getLogger("homeworks")
 log.setLevel(logging.INFO)  # set to DEBUG for early-stage debugging
 
@@ -49,26 +45,32 @@ def init_logging():
     logging.raiseExceptions = False
 
 
+def threads_manager(urls):
+    threads = []
+    for url in urls:
+        thread = Get_request_thread(url)
+        # thread.daemon = True
+        thread.start()
+
+    for thread in threads:
+        thread.join()
+
+
 def main():
     """Main pogram"""
     config = Config()
-    now = datetime.datetime.now(tz=tz.tzlocal()).strftime("%Y-%m-%d %H:%M:%S.%f%z")
 
     for url in config.monitored_url_targets:
         pass
-
-    get_request = requests.request("GET", url)
-    regex_compiled = re.compile("hola", re.MULTILINE)
-    regex_match = regex_compiled.search(get_request.text) != None
-
-    log.info(
-        f"""time={now} web_url={url} http_status={get_request.status_code} resp_time={get_request.elapsed.total_seconds()} regex_match={regex_match}"""
-    )
+    # with daemon.DaemonContext():
+    try:
+        threads_manager(config.monitored_url_targets)
+    except KeyboardInterrupt:
+        log.info("ctrl+break")
 
 
 if __name__ == "__main__":
     init_logging()
-
     try:
         main()
     except Exception as e:

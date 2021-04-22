@@ -1,4 +1,3 @@
-http://localhost:8000/hola_caracola
 http://gmail.com
 http://yahoo.com
 http://hotmail.com
@@ -27,10 +26,8 @@ http://bol.com.br
 http://mail.ru
 http://cox.net
 http://hotmail.it
-http://sbcglobal.net
 http://sfr.fr
 http://live.fr
-http://verizon.net
 http://live.co.uk
 http://googlemail.com
 http://yahoo.es
@@ -96,6 +93,5 @@ http://windstream.net
 http://mac.com
 http://centurytel.net
 http://chello.nl
-http://live.ca
 http://aim.com
 http://bigpond.net.au

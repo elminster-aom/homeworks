@@ -18,6 +18,9 @@ class Config:
         self.monitored_url_targets = self.load_file_into_set(
             dotenv_dict["MONITORING_TARGETS_PATH"]
         )
+        log.debug(
+            f"db_uri={self.db_uri}, db_table={self.db_table} monitored_url_targets={self.monitored_url_targets}"
+        )
 
     @staticmethod
     def load_file_into_set(file_path):
