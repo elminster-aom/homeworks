@@ -10,52 +10,16 @@
 import logging
 import psycopg2
 from psycopg2 import extras
-import sys
+import src.logging_console as logging_console
 from src.config import Config
 
 log = logging.getLogger(__name__)
-# set to DEBUG for early-stage debugging
-log.setLevel(logging.INFO)
 
 
 class SetupError(Exception):
     """Minimal exception class for raising controlled errors"""
 
     pass
-
-
-def init_logging():
-    """Initialization of basic logging to console, stdout and stderr, where
-    log level INFO goes to stdout and anything else to stderr
-    See: https://stackoverflow.com/questions/2302315/how-can-info-and-debug-logging-message-be-sent-to-stdout-and-higher-level-messag
-    """
-
-    class IsEqualFilter(logging.Filter):
-        def __init__(self, level, name=""):
-            logging.Filter.__init__(self, name)
-            self.level = level
-
-        def filter(self, record):
-            # non-zero return means we log this message
-            return 1 if record.levelno == self.level else 0
-
-    class IsNotEqualFilter(logging.Filter):
-        def __init__(self, level, name=""):
-            logging.Filter.__init__(self, name)
-            self.level = level
-
-        def filter(self, record):
-            # non-zero return means we log this message
-            return 1 if record.levelno != self.level else 0
-
-    logging_handler_out = logging.StreamHandler(sys.stdout)
-    logging_handler_out.addFilter(IsEqualFilter(logging.INFO))
-    log.addHandler(logging_handler_out)
-    logging_handler_err = logging.StreamHandler(sys.stderr)
-    logging_handler_err.addFilter(IsNotEqualFilter(logging.INFO))
-    log.addHandler(logging_handler_err)
-    # Prevent exception logging while emitting
-    logging.raiseExceptions = False
 
 
 def initialize_metrics_store(
@@ -127,12 +91,14 @@ def initialize_metrics_store(
 
 def main():
     """Main pogram"""
+    config = Config()
     initialize_metrics_store(config.db_uri, config.db_table)
 
 
 if __name__ == "__main__":
-    config = Config()
-    init_logging()
+    logging_console.init_logging()
+    log.setLevel(logging.INFO)  # set to DEBUG for early-stage debugging
+
     try:
         main()
     except Exception as e:
