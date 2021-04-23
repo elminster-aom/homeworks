@@ -12,7 +12,9 @@ log = logging.getLogger("homeworks")
 
 
 class Get_request_thread(threading.Thread):
-    def __init__(self, url, regex_str="", sampling_frequency_secs=10):
+    def __init__(
+        self, url, metric_send_object, regex_str="", sampling_frequency_secs=10
+    ):
         threading.Thread.__init__(self)
         self.sampling_data = {
             "time": None,
@@ -21,6 +23,7 @@ class Get_request_thread(threading.Thread):
             "resp_time": -1,
             "regex_match": None,
         }
+        self.metric_send_object = metric_send_object
         if regex_str:
             self.regex_pattern = re.compile(regex_str, re.MULTILINE)
         else:
@@ -48,7 +51,7 @@ class Get_request_thread(threading.Thread):
                     else:
                         self.sampling_data["regex_match"] = False
 
-                self.publish_data(self.sampling_data)
+                self.publish_data()
             except KeyboardInterrupt:
                 log.info("ctrl+break")
                 break
@@ -67,6 +70,5 @@ class Get_request_thread(threading.Thread):
 
             time.sleep(self.sampling_frequency_secs)
 
-    @staticmethod
-    def publish_data(data):
-        log.info(data)
+    def publish_data(self):
+        self.metric_send_object.send(self.sampling_data)

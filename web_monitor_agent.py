@@ -1,9 +1,12 @@
+#!/usr/bin/env python3
+
 # import daemon
 import logging
 import sys
 
 from src.config import Config
 from src.get_request_thread import Get_request_thread
+from src.metrics_send import Metrics_send
 
 # TODO: Implement inserts in DB, see: https://hakibenita.com/fast-load-data-python-postgresql
 # TODO: Implement as a daemon, e.g. daemon.DaemonContext()
@@ -47,9 +50,9 @@ def init_logging():
 
 def threads_manager(urls):
     threads = []
+    metric_send_object = Metrics_send()
     for url in urls:
-        thread = Get_request_thread(url)
-        # thread.daemon = True
+        thread = Get_request_thread(url, metric_send_object)
         thread.start()
 
     for thread in threads:

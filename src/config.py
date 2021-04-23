@@ -11,19 +11,20 @@ class Config:
     Config class loads application's seetings and publishes them for rest of application modules
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         dotenv_dict = dotenv.dotenv_values()
         self.db_uri = dotenv_dict["POSTGRESS_URI"]
         self.db_table = "web_health_metrics"
         self.monitored_url_targets = self.load_file_into_set(
             dotenv_dict["MONITORING_TARGETS_PATH"]
         )
+        self.metrics_buffer_path = dotenv_dict["METRICS_BUFFER_PATH"]
         log.debug(
             f"db_uri={self.db_uri}, db_table={self.db_table} monitored_url_targets={self.monitored_url_targets}"
         )
 
     @staticmethod
-    def load_file_into_set(file_path):
+    def load_file_into_set(file_path: str) -> set:
         try:
             with open(file_path, "rt") as f:
                 result_set = set(map(str.strip, f))

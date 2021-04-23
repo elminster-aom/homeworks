@@ -64,8 +64,8 @@ def initialize_metrics_store(
     """Create of both TimescaleDB extension and a table for storing monitoring metrics
 
     Args:
-        db_uri (string): Ful URI (Including: user, password and default database) for connecting to DB
-        db_table (string): Name of the DB hypertable where metrics will be stored
+        db_uri (str): Ful URI (Including: user, password and default database) for connecting to DB
+        db_table (str): Name of the DB hypertable where metrics will be stored
         number_partitions (int, optional): Number of partitions for `db_table` . Defaults to 4.
         chunk_time_interval (str, optional): How long in time will chunk metrics data. Defaults to "1 week".
     Raises:
