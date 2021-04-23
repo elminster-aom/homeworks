@@ -1,0 +1,17 @@
+_WORKSPACE_PATH=/home/user1/homeworks
+KAFKA_ACCESS_CERTIFICATE=${_WORKSPACE_PATH}/tests/service.cert
+KAFKA_ACCESS_KEY=${_WORKSPACE_PATH}/tests/service.key
+KAFKA_CA_CERTIFICATE=${_WORKSPACE_PATH}/tests/ca.pem
+KAFKA_HOST=kafka.aivencloud.com
+KAFKA_PORT=11111
+MONITORING_TARGETS_PATH=${_WORKSPACE_PATH}/tests/list_web_domains.txt
+POSTGRESS_HOST=postgres.aivencloud.com
+POSTGRESS_USER=avnadmin
+POSTGRESS_PASSWORD=password1
+POSTGRESS_PORT=11111
+POSTGERSS_SSL=require
+POSTGRESS_TABLE=web_health_metrics
+
+# Static variables, do NOT modify the lines below
+POSTGRESS_URI=postgres://${POSTGRESS_USER}:${POSTGRESS_PASSWORD}@p${POSTGRESS_HOST}:${POSTGRESS_PORT}/defaultdb?sslmode=${POSTGERSS_SSL}
+KAFKA_SERVICE_URI=${KAFKA_HOST}:${KAFKA_PORT}
