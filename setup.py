@@ -11,7 +11,7 @@ import logging
 import psycopg2
 from psycopg2 import extras
 import sys
-from src.config import Config
+import src.config as config
 
 log = logging.getLogger("homeworks")
 # set to DEBUG for early-stage debugging
@@ -71,7 +71,7 @@ def initialize_metrics_store(
     Raises:
         SetupError: If DB resources are not properly created
     """
-
+    db_connect = None
     try:
         db_connect = psycopg2.connect(db_uri)
         with db_connect.cursor(cursor_factory=extras.RealDictCursor) as db_cursor:
@@ -108,9 +108,11 @@ def initialize_metrics_store(
 
     except (Exception, psycopg2.Error):
         log.exception("TimescaleDB extension could not be crated")
+        raise
     else:
         db_connect.commit()
     finally:
+        print(db_connect)
         if db_connect:
             db_connect.close()
 
@@ -132,7 +134,6 @@ def main():
 
 if __name__ == "__main__":
     init_logging()
-    config = Config()
     try:
         main()
     except Exception as e:

@@ -3,8 +3,7 @@
 # import daemon
 import logging
 import sys
-
-from src.config import Config
+import src.config as config
 from src.get_request_thread import Get_request_thread
 from src.metrics_send import Metrics_send
 
@@ -61,7 +60,6 @@ def threads_manager(urls):
 
 def main():
     """Main pogram"""
-    config = Config()
 
     for url in config.monitored_url_targets:
         pass
