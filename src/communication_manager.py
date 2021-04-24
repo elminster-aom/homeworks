@@ -19,7 +19,6 @@ class Communication_manager:
         self.kafka_ca_cert = config.kafka_ca_cert
         self.kafka_security_protocol = "SSL"
         self.kafka_topic_name = config.kafka_topic_name
-        self.kafka_uri = config.kafka_uri
         self.kafka_consumer = None
 
     def __del__(self) -> None:
@@ -52,7 +51,7 @@ class Communication_manager:
             ]
             log.debug("Object kafka.admin.NewTopic was created")
             kafka_admin_client = kafka.KafkaAdminClient(
-                bootstrap_servers=self.kafka_uri,
+                bootstrap_servers=config.kafka_uri,
                 security_protocol=self.kafka_security_protocol,
                 ssl_cafile=self.kafka_ca_cert,
                 ssl_certfile=self.kafka_access_cert,
@@ -102,7 +101,7 @@ class Communication_manager:
         kafka_producer = None
         try:
             kafka_producer = kafka.KafkaProducer(
-                bootstrap_servers=self.kafka_uri,
+                bootstrap_servers=config.kafka_uri,
                 security_protocol=self.kafka_security_protocol,
                 ssl_cafile=self.kafka_ca_cert,
                 ssl_certfile=self.kafka_access_cert,
@@ -149,7 +148,7 @@ class Communication_manager:
                 self.kafka_consumer = kafka.KafkaConsumer(
                     self.kafka_topic_name,
                     auto_offset_reset="earliest",
-                    bootstrap_servers=self.kafka_uri,
+                    bootstrap_servers=config.kafka_uri,
                     security_protocol=self.kafka_security_protocol,
                     ssl_cafile=self.kafka_ca_cert,
                     ssl_certfile=self.kafka_access_cert,
