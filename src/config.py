@@ -41,6 +41,8 @@ kafka_ca_cert = _dotenv_dict["KAFKA_CA_CERTIFICATE"]
 kafka_uri = _dotenv_dict["KAFKA_SERVICE_URI"]
 kafka_topic_name = _dotenv_dict["KAFKA_TOPIC_NAME"]
 monitored_url_targets = load_file_into_set(_dotenv_dict["MONITORING_TARGETS_PATH"])
+monitored_url_regex = _dotenv_dict["MONITORING_TARGETS_REGEX"]
+monitored_url_retry_secs = _dotenv_dict["MONITORING_RETRY_SECS"]
 
 # Delete temporal varialbe, it was only needed for initialization
 del _dotenv_dict

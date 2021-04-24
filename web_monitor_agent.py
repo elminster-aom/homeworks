@@ -5,12 +5,9 @@ import logging
 import sys
 import src.config as config
 from src.get_request_thread import Get_request_thread
-from src.metrics_send import Metrics_send
 
-# TODO: Implement inserts in DB, see: https://hakibenita.com/fast-load-data-python-postgresql
-# TODO: Implement as a daemon, e.g. daemon.DaemonContext()
 log = logging.getLogger("homeworks")
-log.setLevel(logging.INFO)  # set to DEBUG for early-stage debugging
+log.setLevel(logging.DEBUG)  # set to DEBUG for early-stage debugging
 
 
 def init_logging():
@@ -47,32 +44,51 @@ def init_logging():
     logging.raiseExceptions = False
 
 
-def threads_manager(urls):
-    threads = []
-    metric_send_object = Metrics_send()
-    for url in urls:
-        thread = Get_request_thread(url, metric_send_object)
-        thread.start()
+def waitting_threads_ending_loop(threads: list[Get_request_thread]):
+    """Wait for threads to end, however these threads stop only
+    when they're killed; therefore process becomes a daemon and
+    it runs for always
 
+    Args:
+        urls (list[Get_request_thread]): List of threads waiting to end
+    """
     for thread in threads:
         thread.join()
 
+    log.warning("All threads stoppped by themselves")
 
-def main():
-    """Main pogram"""
 
-    for url in config.monitored_url_targets:
-        pass
-    # with daemon.DaemonContext():
+def main() -> int:
+    """Main pogram
+
+    Returns:
+        int: Return 0 if all went without issue (Note: Ctrl+break is considered normal way to stop it and it should exit 0)
+    """
+    result = 1
+    threads = []
     try:
-        threads_manager(config.monitored_url_targets)
+        for url in config.monitored_url_targets:
+            log.debug(f"Creating Thread for URL: {url}")
+            thread = Get_request_thread(url)
+            thread.start()
+            threads.append(thread)
+
+        # TODO: URGENT! Run next call under 'daemon.DaemonContext()' context, following specifications PEP 3143
+        waitting_threads_ending_loop(threads)
     except KeyboardInterrupt:
-        log.info("ctrl+break")
+        result = 0
+        log.info("Keyboard interruption received (Ctrl+break)")
+    except Exception:
+        log.exception("Unexpected error")
+    else:
+        result = 0
+    finally:
+        return result
 
 
 if __name__ == "__main__":
     init_logging()
-    try:
-        main()
-    except Exception as e:
-        log.exception("Raised exception to main")
+    result = 255
+    result = main()
+
+    sys.exit(result)

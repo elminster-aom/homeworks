@@ -12,7 +12,7 @@ import sys
 from src.store_manager import Store_manager
 
 log = logging.getLogger("homeworks")
-log.setLevel(logging.DEBUG)  # set to DEBUG for early-stage debugging
+log.setLevel(logging.INFO)  # set to DEBUG for early-stage debugging
 
 
 def init_logging():
@@ -74,6 +74,7 @@ def main() -> int:
 
 if __name__ == "__main__":
     init_logging()
+    result = 255
     result = main()
 
     sys.exit(result)

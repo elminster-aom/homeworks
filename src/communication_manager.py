@@ -90,13 +90,17 @@ class Communication_manager:
             message_dict (dict): Metrics from web monitoring
         """
         try:
-            log.debug(f"Sending message '{message_dict}', on topic '{self.kafka_topic_name}'")
+            log.debug(
+                f"Sending message '{message_dict}', on topic '{self.kafka_topic_name}'"
+            )
             message_json = json.dumps(message_dict)
         except json.JSONDecodeError:
             log.exception(f"JSON could not encode message '{message_dict}'")
             raise
         else:
-            log.debug(f"Serialized message object (message_dict) to a JSON formatted string")
+            log.debug(
+                f"Serialized message object (message_dict) to a JSON formatted string"
+            )
 
         kafka_producer = None
         try:
@@ -107,7 +111,7 @@ class Communication_manager:
                 ssl_certfile=self.kafka_access_cert,
                 ssl_keyfile=self.kafka_access_key,
             )
-            log.debug("Stablished connection with KafkaProducer")
+            log.debug("Stablished connection with KafkaProducer. Sending message")
             response = kafka_producer.send(
                 self.kafka_topic_name, message_json.encode("utf-8")
             )
@@ -121,7 +125,9 @@ class Communication_manager:
             raise
         else:
             log.info(f"Message sent")
-            log.debug(f"Message flushed, kafka_producer.send() response was '{response}'")
+            log.debug(
+                f"Message flushed, kafka_producer.send() response was '{response}'"
+            )
         finally:
             if kafka_producer:
                 kafka_producer.close()
@@ -141,8 +147,10 @@ class Communication_manager:
         # TODO: Keep a permanent track of processed messages, therefore auto_offset_reset can be set to "latest" without potentional duplication
 
         result = False
-        if self.kafka_consumer == None or
-           self.kafka_consumer.bootstrap_connected() != True:
+        if (
+            self.kafka_consumer == None
+            or self.kafka_consumer.bootstrap_connected() != True
+        ):
             try:
                 log.debug("Consumer was not connected")
                 self.kafka_consumer = kafka.KafkaConsumer(
@@ -188,7 +196,9 @@ class Communication_manager:
                     for _, messages in responses.items():
                         for message_encoded in messages:
                             message_dict = json.loads(message_encoded.value)
-                            log.debug(f"Deserialized bytes message containing a JSON document, result: {message_dict}")
+                            log.debug(
+                                f"Deserialized bytes message containing a JSON document, result: {message_dict}"
+                            )
                             messages_list.append(message_dict)
         except Exception:
             log.exception(
