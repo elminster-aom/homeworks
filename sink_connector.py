@@ -50,9 +50,8 @@ def sink_data():
     * Loop can be interrupted witha Ctr+Break
     """
     metrics_retriever = Communication_manager()
-    metrics_retriever.connect_consumer()
     metrics_inserter = Store_manager()
-    while metrics_retriever.kafka_consumer.bootstrap_connected():
+    while True:
         try:
             messages = metrics_retriever.consume_messages()
             metrics_inserter.insert_metric_copy(messages)
@@ -62,9 +61,6 @@ def sink_data():
         except Exception:
             log.exception("Unexpected error")
             raise
-        finally:
-            metrics_retriever.close()
-            metrics_inserter.close()
 
 
 def main() -> int:

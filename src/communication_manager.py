@@ -160,7 +160,10 @@ class Communication_manager:
         """Stablish a permanent connection with Kafka for consuming (retrieving) messages
         * Raise exception if communication problems
         * `auto_offset_reset` is set to "earliest" instead "latest" because we found a
-        gap in data is easier to detect that duplicate registers
+        gap in data is easier to detect that duplicate registers, see:
+          ** How Postgresql COPY TO STDIN With CSV do on conflic do update? https://stackoverflow.com/a/48020691
+          ** UPSERTs not working correctly #100, https://github.com/timescale/timescaledb/issues/100
+
         * This call is options, `consume_messages()` stablishes already this connection
         automatically
 
@@ -208,14 +211,17 @@ class Communication_manager:
         """
         self.connect_consumer()
 
-        responses = None
+        number_retries_without_incoming = 0
         messages_list = []
         try:
-            while len(messages_list) == 0:
+            # TODO: Validate that this values are optiomal (Load test required for a better tuning)
+            while number_retries_without_incoming < 2 and len(messages_list) < 1000:
                 log.debug("Reciving messages")
-                responses = self.kafka_consumer.poll(timeout_ms=10000)
+                responses = self.kafka_consumer.poll(timeout_ms=5000)
                 log.debug(f"kafka_consumer.poll() response: {responses}")
                 if responses:
+                    # Reset counter after getting messages
+                    number_retries_without_incoming = 0
                     for _, messages in responses.items():
                         for message_encoded in messages:
                             message_dict = json.loads(message_encoded.value)
@@ -223,6 +229,9 @@ class Communication_manager:
                                 f"Deserialized bytes message containing a JSON document, result: {message_dict}"
                             )
                             messages_list.append(message_dict)
+                else:
+                    number_retries_without_incoming += 1
+
         except Exception:
             log.exception(
                 f"Consumer cannot retrieve message with Kafka, from topic '{self.kafka_topic_name}'"
