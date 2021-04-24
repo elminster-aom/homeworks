@@ -180,19 +180,16 @@ class Store_manager:
         log.debug(f"Inserting, in DB, metrics:\n\t{metrics}")
         metrics_stringIO = io.StringIO()
         for metric_dict in metrics:
-            log.debug(
-                f"Inserting metric_dict.values() in metrics_stringIO, previous converting them to a CSV string"
-            )
+            metric_csv = ",".join(map(self.clean_values, metric_dict.values())) + "\n"
+            # log.debug(f"Convert to CSV and insert in metrics_stringIO: {metric_csv}")
             # TODO: URGENT! Substitute metric_dict.values() by specific calls to the keys, for ensuring the right field's order
-            metrics_stringIO.write(
-                ",".join(map(self.clean_values, metric_dict.values())) + "\n"
-            )
+            metrics_stringIO.write(metric_csv)
         log.debug(f"metrics_stringIO: {metrics_stringIO.getvalue()}")
         metrics_stringIO.seek(0)
 
         with self.db_connect.cursor() as db_cursor:
             log.debug(
-                "Copying metrics from metrics_stringIO to DB with db_cursor.copy_from("
+                "Copying metrics from metrics_stringIO to DB with db_cursor.copy_from()"
             )
             try:
                 db_cursor.copy_from(metrics_stringIO, self.db_table, sep=",")

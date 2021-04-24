@@ -43,11 +43,16 @@ def init_logging():
     # Prevent exception logging while emitting
     logging.raiseExceptions = False
 
-def sink_data:
+
+def sink_data():
+    """While connection to communication bus is still stablished, batchs of messages
+    are retrieved and store in DB
+    * Loop can be interrupted witha Ctr+Break
+    """
     metrics_retriever = Communication_manager()
     metrics_retriever.connect_consumer()
     metrics_inserter = Store_manager()
-    while metrics_retriever.bootstrap_connected():
+    while metrics_retriever.kafka_consumer.bootstrap_connected():
         try:
             messages = metrics_retriever.consume_messages()
             metrics_inserter.insert_metric_copy(messages)

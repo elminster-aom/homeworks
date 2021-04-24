@@ -206,14 +206,14 @@ class Communication_manager:
         Returns:
             list[str]: All retrived metrics, already decoded to text (utf-8)
         """
-        connect_consumer()
+        self.connect_consumer()
 
         responses = None
         messages_list = []
         try:
             while len(messages_list) == 0:
                 log.debug("Reciving messages")
-                responses = kafka_consumer.poll(timeout_ms=10000)
+                responses = self.kafka_consumer.poll(timeout_ms=10000)
                 log.debug(f"kafka_consumer.poll() response: {responses}")
                 if responses:
                     for _, messages in responses.items():
