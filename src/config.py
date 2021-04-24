@@ -32,8 +32,9 @@ def load_file_into_set(file_path: str) -> set:
 
 _dotenv_dict = dotenv.dotenv_values()
 
-db_uri = _dotenv_dict["POSTGRESS_URI"]
-db_table = _dotenv_dict["POSTGRESS_TABLE"]
+db_autocommit = _dotenv_dict["POSTGRES_AUTOCOMMIT"]
+db_uri = _dotenv_dict["POSTGRES_URI"]
+db_table = _dotenv_dict["POSTGRES_TABLE"]
 kafka_access_cert = _dotenv_dict["KAFKA_ACCESS_CERTIFICATE"]
 kafka_access_key = _dotenv_dict["KAFKA_ACCESS_KEY"]
 kafka_ca_cert = _dotenv_dict["KAFKA_CA_CERTIFICATE"]
