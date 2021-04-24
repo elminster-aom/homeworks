@@ -34,10 +34,12 @@ class Communication_manager:
         """
         if self.kafka_consumer:
             self.kafka_consumer.close(autocommit)
+            kafka_consumer = None
             log.debug("Consumer connection was closed")
 
-    def create_topic(self):
-        """Create required topic, `self.kafka_topic_name`, for our application
+    def initialize_metrics_communication(self):
+        """Create required topic, `self.kafka_topic_name`, for posting/retriving our
+        monitoring metrics
         * Raise exception if topic could not be created
         * If topic already exists, it reports as a warning and it countinues
         """
@@ -76,6 +78,27 @@ class Communication_manager:
             if kafka_admin_client:
                 kafka_admin_client.close()
                 log.debug("Connection with KafkaAdminClient was closed")
+
+    def validate_metrics_communication(self) -> bool:
+        """Vaidate that our Kafka topic is defined
+
+        Returns:
+            bool: Return True when our topic is defined
+        """
+        result = False
+        try:
+            self.connect_consumer()
+            topics = self.kafka_consumer.topics()
+
+        except Exception:
+            log.exception("List of defined Kafka topics could not be retrived")
+        else:
+            log.debug(f"List of defined Kafka topics: {topics}")
+            if self.kafka_topic_name in topics:
+                result = True
+        finally:
+            self.close()
+        return result
 
     def produce_message(self, message_dict: dict):
         """Send a message to Kafka, with metrics, from web monitoring
