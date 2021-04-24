@@ -7,7 +7,7 @@ import src.config as config
 from src.get_request_thread import Get_request_thread
 
 log = logging.getLogger("homeworks")
-log.setLevel(logging.DEBUG)  # set to DEBUG for early-stage debugging
+log.setLevel(logging.INFO)  # set to DEBUG for early-stage debugging
 
 
 def init_logging():
