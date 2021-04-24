@@ -17,9 +17,10 @@ class Communication_manager:
         self.kafka_access_cert = config.kafka_access_cert
         self.kafka_access_key = config.kafka_access_key
         self.kafka_ca_cert = config.kafka_ca_cert
+        self.kafka_consumer = None
+        self.group_id = "communication_manager_1"
         self.kafka_security_protocol = "SSL"
         self.kafka_topic_name = config.kafka_topic_name
-        self.kafka_consumer = None
 
     def __del__(self) -> None:
         self.close()
@@ -179,9 +180,12 @@ class Communication_manager:
         ):
             try:
                 log.debug("Consumer was not connected")
+                # Reference about enable_auto_commit=False, see https://www.thebookofjoel.com/python-kafka-consumers
                 self.kafka_consumer = kafka.KafkaConsumer(
                     self.kafka_topic_name,
+                    group_id=self.group_id,
                     auto_offset_reset="earliest",
+                    enable_auto_commit=False,
                     bootstrap_servers=config.kafka_uri,
                     security_protocol=self.kafka_security_protocol,
                     ssl_cafile=self.kafka_ca_cert,
@@ -218,11 +222,12 @@ class Communication_manager:
             while number_retries_without_incoming < 2 and len(messages_list) < 1000:
                 log.debug("Reciving messages")
                 responses = self.kafka_consumer.poll(timeout_ms=5000)
+                self.kafka_consumer.commit()  # Commit the offset of last processed message
                 log.debug(f"kafka_consumer.poll() response: {responses}")
                 if responses:
                     # Reset counter after getting messages
                     number_retries_without_incoming = 0
-                    for _, messages in responses.items():
+                    for messages in responses.values():
                         for message_encoded in messages:
                             message_dict = json.loads(message_encoded.value)
                             log.debug(
