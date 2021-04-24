@@ -29,7 +29,7 @@ class Get_request_thread(threading.Thread):
         else:
             self.regex_pattern = None
 
-        self.monitored_url_retry_secs = config.monitored_url_retry_secs
+        self.monitored_url_retry_secs = int(config.monitored_url_retry_secs)
         self.get_request_timeout = 15
         log.debug(
             f"{self.name}: Instantiated for URL: {self.sampling_data_dict['web_url']}"

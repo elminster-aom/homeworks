@@ -70,7 +70,7 @@ def main() -> int:
         if store_manager:
             store_manager.close()
     if not is_db_ok:
-        result = +1
+        result += 1
 
     # Initialize and validate Communication bus
     communication_manager = None
@@ -80,7 +80,7 @@ def main() -> int:
         if not is_bus_ok:
             communication_manager.initialize_metrics_communication()
     except Exception:
-        result = +1
+        result += 1
         raise
     finally:
         if communication_manager:
