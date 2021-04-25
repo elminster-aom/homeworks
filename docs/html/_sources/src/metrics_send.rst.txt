@@ -1,0 +1,7 @@
+metrics\_send module
+====================
+
+.. automodule:: metrics_send
+   :members:
+   :undoc-members:
+   :show-inheritance:

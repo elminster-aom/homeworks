@@ -59,7 +59,7 @@ def waitting_threads_ending_loop(threads: list[Get_request_thread]):
 
 
 def main() -> int:
-    """Main pogram
+    """Main program
 
     Returns:
         int: Return 0 if all went without issue (Note: Ctrl+break is considered normal way to stop it and it should exit 0)

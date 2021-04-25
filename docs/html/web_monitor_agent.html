@@ -1,0 +1,132 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>web_monitor_agent module &#8212; web_monitoring v0.1-alpha documentation</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-web_monitor_agent">
+<span id="web-monitor-agent-module"></span><h1>web_monitor_agent module<a class="headerlink" href="#module-web_monitor_agent" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt id="web_monitor_agent.init_logging">
+<code class="sig-prename descclassname"><span class="pre">web_monitor_agent.</span></code><code class="sig-name descname"><span class="pre">init_logging</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#web_monitor_agent.init_logging" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialization of basic logging to console, stdout and stderr, where
+log level INFO goes to stdout and everything else goes to stderr
+See: <a class="reference external" href="https://stackoverflow.com/a/31459386">https://stackoverflow.com/a/31459386</a>, How can INFO and DEBUG logging message be sent to stdout and higher level message to stderr?</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="web_monitor_agent.main">
+<code class="sig-prename descclassname"><span class="pre">web_monitor_agent.</span></code><code class="sig-name descname"><span class="pre">main</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">int</span><a class="headerlink" href="#web_monitor_agent.main" title="Permalink to this definition">¶</a></dt>
+<dd><p>Main pogram</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>int</em> – Return 0 if all went without issue (Note: Ctrl+break is considered normal way to stop it and it should exit 0)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="web_monitor_agent.waitting_threads_ending_loop">
+<code class="sig-prename descclassname"><span class="pre">web_monitor_agent.</span></code><code class="sig-name descname"><span class="pre">waitting_threads_ending_loop</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">threads</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#web_monitor_agent.waitting_threads_ending_loop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wait for threads to end, however these threads stop only
+when they’re killed; therefore process becomes a daemon and
+it runs for always</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>urls</strong> (<em>list[Get_request_thread]</em>) – List of threads waiting to end</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">web_monitoring</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Alejandro Olivares.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/web_monitor_agent.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
