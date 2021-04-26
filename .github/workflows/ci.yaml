@@ -21,8 +21,8 @@ jobs:
           ./tests/security_test1.sh
           ./tests/security_test2.sh
 
-      - name: Run metrics collection and store for a while
-        run: ./tests/integration_test.sh
-
-      - name: Check that tested metric were stored on DB
-        run: ./tests/integration_valiation_test.sh
+# We need to know the details of our environment before defining next steps
+# This test must be run manually for the moment (Sorry about that!)
+#      - name: Run metrics collection and store for a while
+#        run: ./tests/integration_test.sh
+#
