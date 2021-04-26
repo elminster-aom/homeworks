@@ -9,3 +9,4 @@
 * *src/store_manager.py*: Analyze the viability of substituting [io.StringIO()](https://docs.python.org/3/library/io.html#io.StringIO) by [mmap.mmap()](https://docs.python.org/3/library/mmap.html#mmap.mmap)
 * *src/store_manager.py*: **URGENT!** Substitute metric_dict.values() by specific calls to the keys, for ensuring the right field's order
 * *\<ALL\>*: Fix our docstrings, therefore [Sphinx](https://www.sphinx-doc.org/en/master/) + [Napoleon](https://sphinxcontrib-napoleon.readthedocs.io/en/latest/index.html), can generate the appropiated HTML documentation
+* *\<ALL\>*: Control in CI between the status of remote repo (which files are not safe to store in Git) and local (Which files require read-only access)
