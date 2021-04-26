@@ -33,11 +33,11 @@ This component is designed thinking of performance. Since its code is not Thread
 > 
 > While it is possible to use the KafkaConsumer in a thread-local manner, multiprocessing is recommended.
 
-Based on the previous restriction, it has been implemented as a mono-thread which intensifies memory usage for a better performance.
+it has been implemented as a mono-thread which intensifies memory usage for a better performance.
 
-Therefore, it consumes Kafka messages in windows of either time or number of messages and stores them (all of them at once) in a Postgres database, where transactional commit is disabled (We relax this setting because all our SQL operation are [ACID](https://en.wikipedia.org/wiki/ACID)). 
+Therefore, it consumes Kafka messages in windows of either time or number of messages and stores them (all of them at once) in a Postgres database, where transactional commit is disabled (we relax this setting since all our SQL operations are [ACID](https://en.wikipedia.org/wiki/ACID)). 
 
-Additionally, performance could be further improved if both Kafka and Postgres components work independently in a continuous stream of data, for example using shared memory ([mmap system call](https://man7.org/linux/man-pages/man2/mmap.2.html)).
+Additionally, performance can be further improved if both Kafka and Postgres components work independently in a continuous stream of data, for example using shared memory ([mmap system call](https://man7.org/linux/man-pages/man2/mmap.2.html)).
 
 On the other hand, for ensuring that our storage is optimized for metrics (time-series data) and can store them for long periods of time, we took profit of [TimescaleDB](https://docs.timescale.com/latest/introduction) plug-in, e.g:
 > **Scalable**
@@ -50,7 +50,7 @@ On the other hand, for ensuring that our storage is optimized for metrics (time-
 It initializes the environment, creating the required resources on Kafka and Postgres services.
 
 ### How to install
-1. Clone or download as a ZIP of this project
+1. Clone or download a ZIP of this project
 2. Ensure that you have the right version of Python, see below
 3. Enable Python Virtual Environment, e.g.:
 ```shell
@@ -59,7 +59,7 @@ $ source bin/activate
 
 ## How to set up and run
 1. Create (if doesn't exist already) a Kafka and PostgresSQL service ([aiven.io] is an interesting option)
-2. All available settings are based on an environment variables file, on the home of our application. For its creation, you can use this template: [env_example](https://github.com/elminster-aom/homeworks/blob/main/docs/env_example), e.g.:
+2. All available settings are based on an environment variables file in the home of our application. For its creation you can use this template: [env_example](https://github.com/elminster-aom/homeworks/blob/main/docs/env_example), e.g.:
 ```shell
 $ wget https://github.com/elminster-aom/homeworks/blob/main/docs/env_example 
 $ nano env_example
@@ -71,7 +71,7 @@ $ chmod 0600 .env
 ```shell
 $ ./setup.py
 ```
-4. Start collecting metrics, using `web_monitor_agent.py` _\*\*_
+4. Start collecting metrics using `web_monitor_agent.py` _\*\*_
 ```shell
 $ ./web_monitor_agent.py
 ```
@@ -81,37 +81,37 @@ $ ./sink_connector.py
 ```
 _\*_ It needs to be run only once per environment, for initialization reasons
 
-_\*\*_ They can run in same server or different ones
+_\*\*_ They can run on the same server or different ones
 
 ### .env
 * **_WORKSPACE_PATH**: Full path to the project (e.g.: `/home/user1/homeworks`)
-* **KAFKA_ACCESS_CERTIFICATE**: Full path to Kafka access certificate (e.g.: `${_WORKSPACE_PATH}/tests/service.cert`), it's available on your [Aiven console](https://console.aiven.io/): _Services -> \<Your Kafka\> -> Overview -> Access Certificate_
+* **KAFKA_ACCESS_CERTIFICATE**: Full path to the Kafka access certificate (e.g.: `${_WORKSPACE_PATH}/tests/service.cert`), available on your [Aiven console](https://console.aiven.io/): _Services -> \<Your Kafka\> -> Overview -> Access Certificate_
 IMPORTANT! (Although it's encrypted) Do not forget to set *service.cert* to read-only for file owner and exclude it from git repository.
-* **KAFKA_ACCESS_KEY**: Full path to Kafka access certificate (e.g.: `${_WORKSPACE_PATH}/tests/service.key`), it's available on your [Aiven console](https://console.aiven.io/): _Services -> \<Your Kafka\> -> Overview -> Access Key_
+* **KAFKA_ACCESS_KEY**: Full path to the Kafka access certificate (e.g.: `${_WORKSPACE_PATH}/tests/service.key`), available on your [Aiven console](https://console.aiven.io/): _Services -> \<Your Kafka\> -> Overview -> Access Key_
 IMPORTANT! Do not forget to set *service.key* to read-only for file owner and exclude it from git repository.
-* **KAFKA_CA_CERTIFICATE**: Full path to Kafka access certificate (e.g.: `${_WORKSPACE_PATH}/tests/ca.pem`), it's available on your [Aiven console](https://console.aiven.io/): _Services -> \<Your Kafka\> -> Overview -> CA Certificate_
-* **KAFKA_HOST**: Kafka hostname (e.g.: `kafka.aivencloud.com`), it's available on your [Aiven console](https://console.aiven.io/): _Services -> \<Your Kafka\> -> Overview -> Host_
-* **KAFKA_PORT**: Kafka TCP listener port (e.g.: `2181`), it's available on your [Aiven console](https://console.aiven.io/): _Services -> \<Your Kafka\> -> Overview -> Port_
-* **KAFKA_TOPIC_NAME**: A unique string, which identifies the Kafka topic for this application (e.g. `web_monitoring`)
-* **MONITORING_RETRY_SECS**: How often, *web_monitor_agent.py* will check the target URLs (in seconds) (e.g.: `60`)
+* **KAFKA_CA_CERTIFICATE**: Full path to the Kafka access certificate (e.g.: `${_WORKSPACE_PATH}/tests/ca.pem`), available on your [Aiven console](https://console.aiven.io/): _Services -> \<Your Kafka\> -> Overview -> CA Certificate_
+* **KAFKA_HOST**: Kafka hostname (e.g.: `kafka.aivencloud.com`), available on your [Aiven console](https://console.aiven.io/): _Services -> \<Your Kafka\> -> Overview -> Host_
+* **KAFKA_PORT**: Kafka TCP listener port (e.g.: `2181`), available on your [Aiven console](https://console.aiven.io/): _Services -> \<Your Kafka\> -> Overview -> Port_
+* **KAFKA_TOPIC_NAME**: A unique string which identifies the Kafka topic for this application (e.g. `web_monitoring`)
+* **MONITORING_RETRY_SECS**: How often *web_monitor_agent.py* will check the target URLs (in seconds) (e.g.: `60`)
 * **MONITORING_TARGETS_PATH**:  Full path to text file with the target URLs, webs to monitor (e.g.: `${_WORKSPACE_PATH}/tests/list_web_domains.txt`)
-* **MONITORING_TARGETS_REGEX**: String with a Regex expression, *web_monitor_agent.py* will look for a match on HTTP GET request's Body
+* **MONITORING_TARGETS_REGEX**: String with a Regex expression *web_monitor_agent.py* will look for a match on HTTP GET request's body
 * **POSTGRES_AUTOCOMMIT**: As documented before, this parameter must be set to `True` for performance reasons
-* **POSTGRES_HOST**: PostgresSQL hostname (e.g.: `postgres.aivencloud.com`), it's available on your [Aiven console](https://console.aiven.io/): _Services -> \<Your PostgresSQL\> -> Overview -> Host_
-* **POSTGRES_USER**: PostgresSQL user (e.g.: `avnadmin`), it's available on your [Aiven console](https://console.aiven.io/): _Services -> \<Your PostgresSQL\> -> Overview -> User_
-* **POSTGRES_PASSWORD**: PostgresSQL password (e.g.: `p4ssW0rd1`), it's available on your [Aiven console](https://console.aiven.io/): _Services -> \<Your PostgresSQL\> -> Overview -> Password_
-* **POSTGRES_PORT**: PostgresSQL TCP listener port (e.g.: `5432`), it's available on your [Aiven console](https://console.aiven.io/): _Services -> \<Your PostgresSQL\> -> Overview -> Port_
+* **POSTGRES_HOST**: PostgresSQL hostname (e.g.: `postgres.aivencloud.com`), available on your [Aiven console](https://console.aiven.io/): _Services -> \<Your PostgresSQL\> -> Overview -> Host_
+* **POSTGRES_USER**: PostgresSQL user (e.g.: `avnadmin`), available on your [Aiven console](https://console.aiven.io/): _Services -> \<Your PostgresSQL\> -> Overview -> User_
+* **POSTGRES_PASSWORD**: PostgresSQL password (e.g.: `p4ssW0rd1`), available on your [Aiven console](https://console.aiven.io/): _Services -> \<Your PostgresSQL\> -> Overview -> Password_
+* **POSTGRES_PORT**: PostgresSQL TCP listener port (e.g.: `5432`), available on your [Aiven console](https://console.aiven.io/): _Services -> \<Your PostgresSQL\> -> Overview -> Port_
 * **POSTGRES_SSL**: PostgresSQL SSL Mode Description (default: `require`). For a full list of values, check PostgresSQL [documentation](https://www.postgresql.org/docs/current/libpq-ssl.html#LIBPQ-SSL-SSLMODE-STATEMENTS)
 * **POSTGRES_TABLE**: Name of a database hypertable for storing our web metrics (e.g.: `web_health_metrics`)
 
 ## Additional considerations
 1. Only Unix-like systems are supported
-2. The code has been tested with only these versions (Different versions may work too but we cannot ensure it):
+2. The code has been tested with only these versions (different versions may work too but we cannot ensure it):
 * Kafka 2.7.0
 * PostgresSQL 13.2
 * Python 3.9.4
 * TimesacleDB 2.1
-3. For a detailed list of Python modules, check our [requirements.txt](https://github.com/elminster-aom/homeworks/blob/main/requirements.txt). It can be used like:
+3. For a detailed list of Python modules check out the [requirements.txt](https://github.com/elminster-aom/homeworks/blob/main/requirements.txt). It can be used like:
 ```shell
 pip3 install --requirement requirements.txt
 ```
