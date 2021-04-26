@@ -20,7 +20,7 @@ if [[ -f ${MY_HOME}/.env ]]; then
     echo "PID: ${sink_connector_PID}"
 
     echo "Wait 1 minute, to ensure data is being generated and collected in DB"
-    sleep 60
+    sleep 6
 
     echo "Kill background processes"
     pkill -f web_monitor_agent.py
@@ -35,7 +35,7 @@ if [[ -f ${MY_HOME}/.env ]]; then
         --tuples-only \
         --command "SELECT * FROM web_health_metrics WHERE time > NOW() - INTERVAL '1 minutes' ORDER BY time DESC;")
 
-    if [[ $(echo "${psql_OUT}" | wc -l) -gt 0 ]]; then
+    if [[ $(echo "${psql_OUT}" | wc -l) -gt 1 ]]; then
         echo "data colected:"
         echo "${psql_OUT}"
         echo "Test passed succesfully!"
