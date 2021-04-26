@@ -115,7 +115,7 @@ pip3 install --requirement requirements.txt
 ```
 
 ## Areas of improvement
-Review the list of [TODOS](https://github.com/elminster-aom/homeworks/blob/main/docs/TODOS.md)
+Review the list of [TODOs](https://github.com/elminster-aom/homeworks/blob/main/docs/TODOS.md)
 
 ## References
 I would like to reference some useful information, that it has been crucial to the implementation of this solution. Thank you to their creators for their disinterested collaboration

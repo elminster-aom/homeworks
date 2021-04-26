@@ -1,0 +1,28 @@
+on:
+  # Trigger the workflow on push or pull request (for all branches)
+  push:
+    branches:
+      - *
+
+defaults:
+  run:
+    shell: bash
+    working-directory: .
+
+jobs:
+  job_validate_security:
+    name: Ensure that code fulfilles our minimum security requirements
+    steps:
+      - name: Validate that global secrets (.env file) are secure enough
+        run: tests/security_test.sh
+
+  job_integration_test:
+    needs: job_validate_security
+    name: Ensure that full application's flow works
+    steps:
+      - name: Run metrics collection and store for a while
+        env:
+          GITHUB_CI_COLLECTION_TIME=60
+        run: test/integration_test.sh
+      - name: Check that tested metric were stored on DB
+        run: tests/integration_valiation_test.sh
