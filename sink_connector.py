@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-"""Retrieves (Consumer) metrics from a Kafka topic and store it on a PostgresSQL hypertable
+"""Retrieves (Consumer) metrics from a Kafka topic and stores it in a PostgresSQL hypertable
 """
 
 # import daemon
@@ -48,9 +48,9 @@ def init_logging():
 
 
 def sink_data():
-    """While connection to communication bus is still stablished, batchs of messages
-    are retrieved and store in DB
-    * Loop can be interrupted witha Ctr+Break
+    """While connection to the communication bus is still established, batches of messages
+    are retrieved and stored in the DB
+    * Loop can be interrupted with a Ctr+Break
     """
     metrics_retriever = Communication_manager()
     metrics_inserter = Store_manager()
@@ -70,7 +70,7 @@ def main() -> int:
     """Main pogram
 
     Returns:
-        int: Return 0 if all went without issue (Note: Ctrl+break is considered normal way to stop it and it should exit 0)
+        int: Return 0 if all ran without issues (Note: Ctrl+break is considered a normal way to stop it and it should exit with 0)
     """
     result = 0
     try:

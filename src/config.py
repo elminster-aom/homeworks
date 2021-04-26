@@ -1,7 +1,7 @@
 """All paremetrization for our monintoring tool is centrazlized here
 """
-# TODO: Use a more secure storage for secrets (e.g. hashicorp vault), actual security is readonly access for .env owner
-# TODO: Encrypt password after using them (accessingt them with a method), therefore they have less chance toappear clear-text, e.g. with system dump
+# TODO: Use a more secure storage for secrets (e.g. hashicorp vault), currently security is implemented as read-only access for file-owner on .env
+# TODO: Encrypt password after using them (accessing them with a method) so that they have less chance to appear clear-text, e.g. with system dump
 
 import dotenv
 import logging
@@ -44,7 +44,7 @@ monitored_url_targets = load_file_into_set(_dotenv_dict["MONITORING_TARGETS_PATH
 monitored_url_regex = _dotenv_dict["MONITORING_TARGETS_REGEX"]
 monitored_url_retry_secs = _dotenv_dict["MONITORING_RETRY_SECS"]
 
-# Delete temporal varialbe, it was only needed for initialization
+# Delete temporary varialbe, it was only needed for initialization
 del _dotenv_dict
 
 log.debug(
