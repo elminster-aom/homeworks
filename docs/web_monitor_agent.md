@@ -11,7 +11,7 @@ Main program
 
 **Returns**
 
-`int` – Return 0 if all went without issue (Note: _Ctrl+break_ is considered normal way to stop it and it should exit 0)
+`int` – Return 0 if all ran without issues (Note: _Ctrl+break_ is considered a normal way to stop it and it should exit with 0)
 
 ## web_monitor_agent.waitting_threads_ending_loop(threads: list)
 Wait for threads to end, however these threads stop only when they’re killed; therefore process becomes a daemon and it runs for always
