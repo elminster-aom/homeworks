@@ -2,7 +2,47 @@
 needed resources for our web-monitoring application
 """
 
-pass
+import pytest
+import src.config as config
+import traceback
+from src.communication_manager import Communication_manager
+from src.store_manager import Store_manager
+
+
+def test_kafka_resources():
+    """Validate that our topic is already created in kafka"""
+    assertion = False
+    try:
+        kafka = Communication_manager()
+        kafka.connect_consumer()
+    except Exception:
+        print(traceback.print_exc())
+    else:
+        topics_set = kafka.kafka_consumer.topics()
+        print(f"List of available topics in Kafa: {topics_set}")
+        if config.kafka_topic_name in topics_set:
+            assertion = True
+    finally:
+        kafka.close()
+
+    # fmt: off
+    assert assertion, f"Test failed because our topic '{config.kafka_topic_name}' is not in the list of defined Kafka topics: {topics_set}"
+    # fmt: on
+
+
+def test_postgres_resources_1():
+    """Validate that our table is already created as hypertable and it has 2 dimensions in Postgres"""
+    assertion = False
+    try:
+        postgres = Store_manager()
+        assertion = postgres.validate_metric_store()
+    finally:
+        postgres.close()
+
+    # fmt: off
+    assert assertion, f"Something wrong with DB definitions, '{config.db_table}' is not a hypertable or does not have two dimension"
+    # fmt: on
+
 
 """ 1. Confirm the debug-output for DB reports right definition for our metrics, e.g. from:
 $ ./setup.py

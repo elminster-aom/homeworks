@@ -10,3 +10,4 @@
 * *src/store_manager.py*: **URGENT!** Substitute metric_dict.values() with specific calls to the keys, for ensuring the right order of the fields
 * *\<ALL\>*: Fix our docstrings so that [Sphinx](https://www.sphinx-doc.org/en/master/) + [Napoleon](https://sphinxcontrib-napoleon.readthedocs.io/en/latest/index.html) can generate the appropriate HTML documentation
 * *\<ALL\>*: Control in CI between the status of remote repo (which files are not safe to store in Git) and local (which files require read-only access)
+* *src/communication_manager.py*: **URGENT!** Enabling group_id!=None goes in unexpected scenarion where messages are not cosumed. Investigate further

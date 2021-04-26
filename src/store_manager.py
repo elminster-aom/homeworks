@@ -184,19 +184,23 @@ class Store_manager:
             # log.debug(f"Convert to CSV and insert in metrics_stringIO: {metric_csv}")
             # TODO: URGENT! Substitute metric_dict.values() by specific calls to the keys, for ensuring the right field's order
             metrics_stringIO.write(metric_csv)
-        log.debug(f"metrics_stringIO: {metrics_stringIO.getvalue()}")
-        metrics_stringIO.seek(0)
 
-        with self.db_connect.cursor() as db_cursor:
-            log.debug(
-                "Copying metrics from metrics_stringIO to DB with db_cursor.copy_from()"
-            )
-            try:
-                db_cursor.copy_from(metrics_stringIO, self.db_table, sep=",")
-            except (psycopg2.Error, Exception):
-                log.exception("Could not copy metrics in DB")
-                raise
-            else:
-                log.info("Metrics copied in DB")
-            finally:
-                metrics_stringIO.close()
+        log.debug(f"metrics_stringIO: {metrics_stringIO.getvalue()}")
+        if len(metrics_stringIO.getvalue()) > 0:
+            metrics_stringIO.seek(0)
+
+            with self.db_connect.cursor() as db_cursor:
+                log.debug(
+                    "Copying metrics from metrics_stringIO to DB with db_cursor.copy_from()"
+                )
+                try:
+                    db_cursor.copy_from(metrics_stringIO, self.db_table, sep=",")
+                except (psycopg2.Error, Exception):
+                    log.exception("Could not copy metrics in DB")
+                    raise
+                else:
+                    log.info("Metrics copied in DB")
+                finally:
+                    metrics_stringIO.close()
+        else:
+            log.info("Nothing to copy in DB")
