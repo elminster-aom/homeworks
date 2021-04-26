@@ -1,5 +1,12 @@
 #!/usr/bin/env python3
 
+"""Monitors the health of several Web pages, collecting the information listed below,
+and publishes (Producer) it on a Kafka topic:
+* HTTP response time
+* Error code returned
+* Pattern that is expected to be found on the page 
+"""
+
 # import daemon
 import logging
 import sys

@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+"""Retrieves (Consumer) metrics from a Kafka topic and store it on a PostgresSQL hypertable
+"""
+
 # import daemon
 import logging
 import sys
