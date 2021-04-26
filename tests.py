@@ -2,7 +2,23 @@
 needed resources for our web-monitoring application
 """
 
-pass
+import traceback
+from src.communication_manager import Communication_manager
+
+
+def test_kafka_resources():
+    try:
+        kafak_consumer = Communication_manager()
+    except Exception:
+        print(traceback.format_exc())
+    else:
+        print(kafak_consumer.topics())
+    finally:
+        kafak_consumer.close()
+
+
+if __name__ == "__main__":
+    test_kafka_resources()
 
 """ 1. Confirm the debug-output for DB reports right definition for our metrics, e.g. from:
 $ ./setup.py
