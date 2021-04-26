@@ -1,8 +1,7 @@
-on:
-  # Trigger the workflow on push or pull request (for all branches)
-  push:
-    branches:
-      - *
+name: CI
+
+# Trigger the workflow on push or pull request (for all branches)
+on: [push]
 
 defaults:
   run:
@@ -12,17 +11,18 @@ defaults:
 jobs:
   job_validate_security:
     name: Ensure that code fulfilles our minimum security requirements
+    runs-on: ubuntu-latest
     steps:
-      - name: Validate that global secrets (.env file) are secure enough
-        run: tests/security_test.sh
+      - name: Set up environment, retrieving the repository
+        uses: actions/checkout@main
 
-  job_integration_test:
-    needs: job_validate_security
-    name: Ensure that full application's flow works
-    steps:
+      - name: Validate that global secrets (.env, service.key, ...) are secure enough
+        run: |
+          ./tests/security_test1.sh
+          ./tests/security_test2.sh
+
       - name: Run metrics collection and store for a while
-        env:
-          GITHUB_CI_COLLECTION_TIME=60
-        run: test/integration_test.sh
+        run: ./tests/integration_test.sh
+
       - name: Check that tested metric were stored on DB
-        run: tests/integration_valiation_test.sh
+        run: ./tests/integration_valiation_test.sh

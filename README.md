@@ -86,7 +86,9 @@ _\*\*_ They can run in same server or different ones
 ### .env
 * **_WORKSPACE_PATH**: Full path to the project (e.g.: `/home/user1/homeworks`)
 * **KAFKA_ACCESS_CERTIFICATE**: Full path to Kafka's access certificate (e.g.: `${_WORKSPACE_PATH}/tests/service.cert`), it's available on your [Aiven console](https://console.aiven.io/): _Services -> \<Your Kafka\> -> Overview -> Access Certificate_
+IMPORTANT! (Although it's encrypted) Do not forget to set *service.cert* to read-only for file owner and exclue it from git repository.
 * **KAFKA_ACCESS_KEY**: Full path to Kafka's access certificate (e.g.: `${_WORKSPACE_PATH}/tests/service.key`), it's available on your [Aiven console](https://console.aiven.io/): _Services -> \<Your Kafka\> -> Overview -> Access Key_
+IMPORTANT! Do not forget to set *service.key* to read-only for file owner and exclue it from git repository.
 * **KAFKA_CA_CERTIFICATE**: Full path to Kafka's access certificate (e.g.: `${_WORKSPACE_PATH}/tests/ca.pem`), it's available on your [Aiven console](https://console.aiven.io/): _Services -> \<Your Kafka\> -> Overview -> CA Certificate_
 * **KAFKA_HOST**: Kafka's hostname (e.g.: `kafka.aivencloud.com`), it's available on your [Aiven console](https://console.aiven.io/): _Services -> \<Your Kafka\> -> Overview -> Host_
 * **KAFKA_PORT**: Kafka's TCP listener port (e.g.: `2181`), it's available on your [Aiven console](https://console.aiven.io/): _Services -> \<Your Kafka\> -> Overview -> Port_
