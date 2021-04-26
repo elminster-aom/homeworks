@@ -87,7 +87,7 @@ _\*\*_ They can run on the same server or different ones
 * **_WORKSPACE_PATH**: Full path to the project (e.g.: `/home/user1/homeworks`)
 * **KAFKA_ACCESS_CERTIFICATE**: Full path to the Kafka access certificate (e.g.: `${_WORKSPACE_PATH}/tests/service.cert`), available on your [Aiven console](https://console.aiven.io/): _Services -> \<Your Kafka\> -> Overview -> Access Certificate_
 IMPORTANT! (Although it's encrypted) Do not forget to set *service.cert* to read-only for file owner and exclude it from git repository.
-* **KAFKA_ACCESS_KEY**: Full path to the Kafka access certificate (e.g.: `${_WORKSPACE_PATH}/tests/service.key`), available on your [Aiven console](https://console.aiven.io/): _Services -> \<Your Kafka\> -> Overview -> Access Key_
+* **KAFKA_ACCESS_KEY**: Full path to the Kafka access key (e.g.: `${_WORKSPACE_PATH}/tests/service.key`), available on your [Aiven console](https://console.aiven.io/): _Services -> \<Your Kafka\> -> Overview -> Access Key_
 IMPORTANT! Do not forget to set *service.key* to read-only for file owner and exclude it from git repository.
 * **KAFKA_CA_CERTIFICATE**: Full path to the Kafka access certificate (e.g.: `${_WORKSPACE_PATH}/tests/ca.pem`), available on your [Aiven console](https://console.aiven.io/): _Services -> \<Your Kafka\> -> Overview -> CA Certificate_
 * **KAFKA_HOST**: Kafka hostname (e.g.: `kafka.aivencloud.com`), available on your [Aiven console](https://console.aiven.io/): _Services -> \<Your Kafka\> -> Overview -> Host_
