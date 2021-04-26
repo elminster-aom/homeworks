@@ -1,7 +1,7 @@
 # setup.py
 -- [source](https://github.com/elminster-aom/homeworks/blob/main/setup.py) --
 
-Independent module for initializing the environment, it has to be run only once (per environment) before running the main program
+Independent module for initializing the environment. It has to be run only once (per environment) before running the main program.
 1. It assumes that PostgresSQL platform is up and running and we have administrative authorization
 2. It assumes that Kafka platform is up and running and we have administrative authorization
 3. It enables TimescaleDB extension in PostgresSQL
