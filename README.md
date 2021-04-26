@@ -83,6 +83,24 @@ _\*_ It needs to be run only once per environment, for initialization reasons.
 
 _\*\*_ They can run in same server or different ones
 
+### .env
+* **_WORKSPACE_PATH**: Full path to the project (e.g.: `/home/user1/homeworks`)
+* **KAFKA_ACCESS_CERTIFICATE**: Full path to Kafka's access certificate (e.g.: `${_WORKSPACE_PATH}/tests/service.cert`), it's available on your [Aiven console](https://console.aiven.io/): _Services -> \<Your Kafka\> -> Overview -> Access Certificate_
+* **KAFKA_ACCESS_KEY**: Full path to Kafka's access certificate (e.g.: `${_WORKSPACE_PATH}/tests/service.key`), it's available on your [Aiven console](https://console.aiven.io/): _Services -> \<Your Kafka\> -> Overview -> Access Key_
+* **KAFKA_CA_CERTIFICATE**: Full path to Kafka's access certificate (e.g.: `${_WORKSPACE_PATH}/tests/ca.pem`), it's available on your [Aiven console](https://console.aiven.io/): _Services -> \<Your Kafka\> -> Overview -> CA Certificate_
+* **KAFKA_HOST**: Kafka's hostname (e.g.: `kafka.aivencloud.com`), it's available on your [Aiven console](https://console.aiven.io/): _Services -> \<Your Kafka\> -> Overview -> Host_
+* **KAFKA_PORT**: Kafka's TCP listener port (e.g.: `2181`), it's available on your [Aiven console](https://console.aiven.io/): _Services -> \<Your Kafka\> -> Overview -> Port_
+* **KAFKA_TOPIC_NAME**: A unique string, which identifies the Kafka's Topic for this application (e.g. `web_monitoring`)
+* **MONITORING_RETRY_SECS**: How often, *web_monitor_agent.py* will check the target URLs (in seconds) (e.g.: `60`)
+* **MONITORING_TARGETS_PATH**:  Full path to text file with the target URLs, webs to monitor (e.g.: `${_WORKSPACE_PATH}/tests/list_web_domains.txt`)
+* **MONITORING_TARGETS_REGEX**: String with a Regex expression, *web_monitor_agent.py* will look for a match on HTTP GET request's Body
+* **POSTGRES_AUTOCOMMIT**: As documented before, this parameter must be set `True` for performance reasons
+* **POSTGRES_HOST**: PostgresSQL's hostname (e.g.: `postgres.aivencloud.com`), it's available on your [Aiven console](https://console.aiven.io/): _Services -> \<Your PostgresSQL\> -> Overview -> Host_
+* **POSTGRES_USER**: PostgresSQL's user (e.g.: `avnadmin`), it's available on your [Aiven console](https://console.aiven.io/): _Services -> \<Your PostgresSQL\> -> Overview -> User_
+* **POSTGRES_PASSWORD**: PostgresSQL's password (e.g.: `p4ssW0rd1`), it's available on your [Aiven console](https://console.aiven.io/): _Services -> \<Your PostgresSQL\> -> Overview -> Password_
+* **POSTGRES_PORT**: PostgresSQL's TCP listener port (e.g.: `5432`), it's available on your [Aiven console](https://console.aiven.io/): _Services -> \<Your PostgresSQL\> -> Overview -> Port_
+* **POSTGRES_SSL**: PostgresSQL's SSL Mode Description (default: `require`). For a full list values, check PostgresSQL [documentation](https://www.postgresql.org/docs/current/libpq-ssl.html#LIBPQ-SSL-SSLMODE-STATEMENTS)
+* **POSTGRES_TABLE**: Name of Database Hypertable for storing our web metrics (e.g.: `web_health_metrics`)
 
 ## Additional considerations
 1. Only Unix-like systems are supported
