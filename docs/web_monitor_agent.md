@@ -18,4 +18,4 @@ Wait for threads to end, however these threads stop only when they’re killed; 
 
 **Parameters**
 
-***urls***(`list[Get_request_thread]`) – List of threads waiting to end
+***urls***(`list[Get_request_thread]`) – list of threads waiting to end
