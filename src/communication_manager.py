@@ -172,7 +172,7 @@ class Communication_manager:
             bool: Return `True` when the bootstrap is succesfully connected
         """
         # TODO: Keep a permanent track of processed messages, therefore auto_offset_reset can be set to "latest" without potentional duplication
-
+        # TODO: URGENT! Enabling group_id!=None goes in unexpected scenarion where messages are not cosumed. Investigate further
         result = False
         if (
             self.kafka_consumer == None
@@ -183,9 +183,10 @@ class Communication_manager:
                 # Reference about enable_auto_commit=False, see https://www.thebookofjoel.com/python-kafka-consumers
                 self.kafka_consumer = kafka.KafkaConsumer(
                     self.kafka_topic_name,
-                    group_id=self.group_id,
-                    auto_offset_reset="earliest",
-                    enable_auto_commit=False,
+                    # group_id=self.group_id,
+                    auto_offset_reset="latest",
+                    enable_auto_commit=True,
+                    auto_commit_interval_ms=5000,
                     bootstrap_servers=config.kafka_uri,
                     security_protocol=self.kafka_security_protocol,
                     ssl_cafile=self.kafka_ca_cert,
@@ -219,10 +220,10 @@ class Communication_manager:
         messages_list = []
         try:
             # TODO: Validate that this values are optiomal (Load test required for a better tuning)
-            while number_retries_without_incoming < 1 and len(messages_list) < 100:
+            while number_retries_without_incoming < 2 and len(messages_list) < 100:
                 log.debug("Reciving messages")
                 responses = self.kafka_consumer.poll(timeout_ms=1000)
-                self.kafka_consumer.commit()  # Commit the offset of last processed message
+                # self.kafka_consumer.commit()  # Commit the offset of last processed message
                 log.debug(f"kafka_consumer.poll() response: {responses}")
                 if responses:
                     # Reset counter after getting messages
