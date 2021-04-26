@@ -60,14 +60,14 @@ class Communication_manager:
                 ssl_certfile=self.kafka_access_cert,
                 ssl_keyfile=self.kafka_access_key,
             )
-            log.debug("Stablished connection with KafkaAdminClient")
+            log.debug("Established connection with KafkaAdminClient")
             responses = kafka_admin_client.create_topics(
                 new_topics=kafka_topics, validate_only=False
             )
 
         except kafka.errors.TopicAlreadyExistsError:
             log.warning(
-                f"Topic '{self.kafka_topic_name}' already exist, skipping next step"
+                f"Topic '{self.kafka_topic_name}' already exists, skipping next step"
             )
         except Exception:
             log.exception(f"Topic '{self.kafka_topic_name}' could not be created")
