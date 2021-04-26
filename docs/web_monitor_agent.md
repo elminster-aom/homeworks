@@ -1,7 +1,7 @@
 # web_monitor_agent module
 -- [source](https://github.com/elminster-aom/homeworks/blob/main/web_monitor_agent.py) --
 
-Monitors the health of several Web pages, collecting the information listed below, and publishes (Producer) it on a Kafka topic:
+Monitors the health of several Web pages, collecting the information listed below, and publishes (Producer) it to a Kafka topic:
 * HTTP response time
 * Error code returned
 * Pattern that is expected to be found on the page 
