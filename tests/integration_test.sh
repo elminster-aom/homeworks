@@ -20,7 +20,7 @@ if [[ -f ${MY_HOME}/.env ]]; then
     echo "PID: ${sink_connector_PID}"
 
     echo "Wait 1 minute, to ensure data is being generated and collected in DB"
-    sleep 6
+    sleep 60
 
     echo "Kill background processes"
     pkill -f web_monitor_agent.py
