@@ -1,5 +1,5 @@
-"""Our API interface for interacting with Kafka service.
-Its purpose is isolating communication service from main application logic
+"""The API interface for interacting with Kafka service.
+Its purpose is to isolate communication service from the main application logic
 """
 
 import kafka
@@ -11,7 +11,7 @@ log = logging.getLogger("homeworks")
 
 
 class Communication_manager:
-    """Implement the methods for creating basic Kafka resources for our application"""
+    """Implement the methods for creating basic Kafka resources for the application"""
 
     def __init__(self):
         self.kafka_access_cert = config.kafka_access_cert
@@ -39,10 +39,10 @@ class Communication_manager:
             log.debug("Consumer connection was closed")
 
     def initialize_metrics_communication(self):
-        """Create required topic, `self.kafka_topic_name`, for posting/retriving our
+        """Create required topic `self.kafka_topic_name` for posting/retrieving
         monitoring metrics
         * Raise exception if topic could not be created
-        * If topic already exists, it reports as a warning and it countinues
+        * If topic already exists, it reports as a warning and continues
         """
         kafka_admin_client = None
         try:
@@ -60,14 +60,14 @@ class Communication_manager:
                 ssl_certfile=self.kafka_access_cert,
                 ssl_keyfile=self.kafka_access_key,
             )
-            log.debug("Stablished connection with KafkaAdminClient")
+            log.debug("Established connection with KafkaAdminClient")
             responses = kafka_admin_client.create_topics(
                 new_topics=kafka_topics, validate_only=False
             )
 
         except kafka.errors.TopicAlreadyExistsError:
             log.warning(
-                f"Topic '{self.kafka_topic_name}' already exist, skipping next step"
+                f"Topic '{self.kafka_topic_name}' already exists, skipping next step"
             )
         except Exception:
             log.exception(f"Topic '{self.kafka_topic_name}' could not be created")
@@ -81,10 +81,10 @@ class Communication_manager:
                 log.debug("Connection with KafkaAdminClient was closed")
 
     def validate_metrics_communication(self) -> bool:
-        """Vaidate that our Kafka topic is defined
+        """Vaidate that the Kafka topic is defined
 
         Returns:
-            bool: Return True when our topic is defined
+            bool: Return True when the topic is defined
         """
         result = False
         try:
@@ -92,7 +92,7 @@ class Communication_manager:
             topics = self.kafka_consumer.topics()
 
         except Exception:
-            log.exception("List of defined Kafka topics could not be retrived")
+            log.exception("List of defined Kafka topics could not be retrieved")
         else:
             log.debug(f"List of defined Kafka topics: {topics}")
             if self.kafka_topic_name in topics:
@@ -102,13 +102,14 @@ class Communication_manager:
         return result
 
     def produce_message(self, message_dict: dict):
-        """Send a message to Kafka, with metrics, from web monitoring
-        * Raise exception if message could no be crated (No guarantee is made about
-        the completation of message sent)
-        * Missage is syncronous (`producer.flush()`) for simplifying the code,
+        """Send a message with metrics from web monitoring to Kafka 
+        * Raise exception if message could no be created (No guarantee is made about
+        the completion of message sent)
+        * Message is synchronous (`producer.flush()`) for simplifying the code,
         since threads sample metrics less often than 5-6 times per minute
-        * Message is encoded as JSON and Kafka Key is unset, since message doesn't
-        require been sorted
+        * Message is encoded as JSON
+        * Kafka Key is unset, since message doesn't
+        require to be sorted
 
         Args:
             message_dict (dict): Metrics from web monitoring
@@ -135,7 +136,7 @@ class Communication_manager:
                 ssl_certfile=self.kafka_access_cert,
                 ssl_keyfile=self.kafka_access_key,
             )
-            log.debug("Stablished connection with KafkaProducer. Sending message")
+            log.debug("Established connection with KafkaProducer. Sending message")
             response = kafka_producer.send(
                 self.kafka_topic_name, message_json.encode("utf-8")
             )
@@ -158,21 +159,21 @@ class Communication_manager:
                 log.debug("Connection with KafkaProducer was closed")
 
     def connect_consumer(self) -> bool:
-        """Stablish a permanent connection with Kafka for consuming (retrieving) messages
-        * Raise exception if communication problems
-        * `auto_offset_reset` is set to "earliest" instead "latest" because we found a
-        gap in data is easier to detect that duplicate registers, see:
+        """Establish a permanent connection with Kafka for consuming (retrieving) messages
+        * Raise exception in case of communication problems
+        * `auto_offset_reset` is set to "latest" instead of "earliest" because we found that a
+        gap in data is easier to detect than to duplicate registers, see:
           ** How Postgresql COPY TO STDIN With CSV do on conflic do update? https://stackoverflow.com/a/48020691
           ** UPSERTs not working correctly #100, https://github.com/timescale/timescaledb/issues/100
 
-        * This call is options, `consume_messages()` stablishes already this connection
+        * This call is optional, `consume_messages()` establishes already this connection
         automatically
 
         Returns:
             bool: Return `True` when the bootstrap is succesfully connected
         """
         # TODO: Keep a permanent track of processed messages, therefore auto_offset_reset can be set to "latest" without potentional duplication
-
+        # TODO: URGENT! Enabling group_id!=None goes in unexpected scenarion where messages are not cosumed. Investigate further
         result = False
         if (
             self.kafka_consumer == None
@@ -183,9 +184,10 @@ class Communication_manager:
                 # Reference about enable_auto_commit=False, see https://www.thebookofjoel.com/python-kafka-consumers
                 self.kafka_consumer = kafka.KafkaConsumer(
                     self.kafka_topic_name,
-                    group_id=self.group_id,
-                    auto_offset_reset="earliest",
-                    enable_auto_commit=False,
+                    # group_id=self.group_id,
+                    auto_offset_reset="latest",
+                    enable_auto_commit=True,
+                    auto_commit_interval_ms=5000,
                     bootstrap_servers=config.kafka_uri,
                     security_protocol=self.kafka_security_protocol,
                     ssl_cafile=self.kafka_ca_cert,
@@ -194,11 +196,11 @@ class Communication_manager:
                 )
             except Exception:
                 log.exception(
-                    f"Consumer cannot stablish connection with Kafka, from topic '{self.kafka_topic_name}'"
+                    f"Consumer cannot establish connection with Kafka, from topic '{self.kafka_topic_name}'"
                 )
                 raise
             else:
-                log.debug("Stablished connection with KafkaConsumer")
+                log.debug("Established connection with KafkaConsumer")
                 result = True
         else:
             log.debug("Consumer is already connected")
@@ -207,22 +209,22 @@ class Communication_manager:
 
     def consume_messages(self) -> list[dict]:
         """Retrieve messages from Kafka
-        * Raise exception if communication problems
-        * This call will wait _in eternum_ until at least one messsage can be retrived
+        * Raise exception in case of communication problems
+        * This call will wait _in eternum_ until at least one messsage can be retrieved
 
         Returns:
-            list[str]: All retrived metrics, already decoded to text (utf-8)
+            list[str]: All retrieved metrics, already decoded to text (utf-8)
         """
         self.connect_consumer()
 
         number_retries_without_incoming = 0
         messages_list = []
         try:
-            # TODO: Validate that this values are optiomal (Load test required for a better tuning)
-            while number_retries_without_incoming < 1 and len(messages_list) < 100:
-                log.debug("Reciving messages")
+            # TODO: Validate that these values are optiomal (Load test required for better tuning)
+            while number_retries_without_incoming < 2 and len(messages_list) < 100:
+                log.debug("Receiving messages")
                 responses = self.kafka_consumer.poll(timeout_ms=1000)
-                self.kafka_consumer.commit()  # Commit the offset of last processed message
+                # self.kafka_consumer.commit()  # Commit the offset of last processed message
                 log.debug(f"kafka_consumer.poll() response: {responses}")
                 if responses:
                     # Reset counter after getting messages

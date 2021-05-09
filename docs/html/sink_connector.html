@@ -1,0 +1,127 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>sink_connector module &#8212; web_monitoring v0.1-alpha documentation</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-sink_connector">
+<span id="sink-connector-module"></span><h1>sink_connector module<a class="headerlink" href="#module-sink_connector" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt id="sink_connector.init_logging">
+<code class="sig-prename descclassname"><span class="pre">sink_connector.</span></code><code class="sig-name descname"><span class="pre">init_logging</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sink_connector.init_logging" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialization of basic logging to console, stdout and stderr, where
+log level INFO goes to stdout and everything else goes to stderr
+See: <a class="reference external" href="https://stackoverflow.com/a/31459386">https://stackoverflow.com/a/31459386</a>, How can INFO and DEBUG logging message be sent to stdout and higher level message to stderr?</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="sink_connector.main">
+<code class="sig-prename descclassname"><span class="pre">sink_connector.</span></code><code class="sig-name descname"><span class="pre">main</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">int</span><a class="headerlink" href="#sink_connector.main" title="Permalink to this definition">¶</a></dt>
+<dd><p>Main pogram</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>int</em> – Return 0 if all went without issue (Note: Ctrl+break is considered normal way to stop it and it should exit 0)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="sink_connector.sink_data">
+<code class="sig-prename descclassname"><span class="pre">sink_connector.</span></code><code class="sig-name descname"><span class="pre">sink_data</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sink_connector.sink_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>While connection to communication bus is still stablished, batchs of messages
+are retrieved and store in DB
+* Loop can be interrupted witha Ctr+Break</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">web_monitoring</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Alejandro Olivares.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/sink_connector.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

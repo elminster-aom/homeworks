@@ -1,5 +1,12 @@
 #!/usr/bin/env python3
 
+"""Monitors the health of several Web pages, collecting the information listed below,
+and publishes (Producer) it to a Kafka topic:
+* HTTP response time
+* Error code returned
+* Pattern that is expected to be found on the page 
+"""
+
 # import daemon
 import logging
 import sys
@@ -59,10 +66,10 @@ def waitting_threads_ending_loop(threads: list[Get_request_thread]):
 
 
 def main() -> int:
-    """Main pogram
+    """Main program
 
     Returns:
-        int: Return 0 if all went without issue (Note: Ctrl+break is considered normal way to stop it and it should exit 0)
+        int: Return 0 if all ran without issues (Note: Ctrl+break is considered a normal way to stop it and it should exit with 0)
     """
     result = 1
     threads = []

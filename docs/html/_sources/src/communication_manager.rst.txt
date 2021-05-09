@@ -1,0 +1,7 @@
+communication\_manager module
+=============================
+
+.. automodule:: communication_manager
+   :members:
+   :undoc-members:
+   :show-inheritance:

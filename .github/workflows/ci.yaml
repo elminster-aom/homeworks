@@ -1,0 +1,28 @@
+name: CI
+
+# Trigger the workflow on push or pull request (for all branches)
+on: [push]
+
+defaults:
+  run:
+    shell: bash
+    working-directory: .
+
+jobs:
+  job_validate_security:
+    name: Ensure that code fulfilles our minimum security requirements
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up environment, retrieving the repository
+        uses: actions/checkout@main
+
+      - name: Validate that global secrets (.env, service.key, ...) are secure enough
+        run: |
+          ./tests/security_test1.sh
+          ./tests/security_test2.sh
+
+# We need to know the details of our environment before defining next steps
+# This test must be run manually for the moment (Sorry about that!)
+#      - name: Run metrics collection and store for a while
+#        run: ./tests/integration_test.sh
+#

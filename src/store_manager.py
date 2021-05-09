@@ -8,7 +8,7 @@ log = logging.getLogger("homeworks")
 
 
 class Store_manager:
-    """Implement the methods for storing the metrics collected by our application"""
+    """Implement the methods for storing the metrics collected by the application"""
 
     def __init__(self):
         """Default constructor
@@ -24,7 +24,7 @@ class Store_manager:
         self.db_autocommit = config.db_autocommit
         self.db_table = config.db_table
         self.connect()
-        # TODO: Create a tunning-setup config file for the values bellow
+        # TODO: Create a tuning-setup config file for the values below
         self.hypertable_number_partitions = 4
         self.hypertable_chunk_time_interval = "1 week"
 
@@ -39,11 +39,11 @@ class Store_manager:
             log.info("Connection with DB was closed")
 
     def connect(self) -> bool:
-        """Stablish a permanent connection with DB for storing monitoring metrics
+        """Establish a permanent connection with DB for storing monitoring metrics
         * Sets `self.db_connect`, object to DB
 
         Returns:
-            bool: Returns True when connection is succesfully stablished
+            bool: Returns True when connection is succesfully established
         """
         # TODO: Implement a more accurate status control, see https://www.psycopg.org/docs/extensions.html#connection-status-constants
 
@@ -53,27 +53,27 @@ class Store_manager:
                 log.debug("Connecting with DB")
                 self.db_connect = psycopg2.connect(config.db_uri)
             except Exception:
-                log.exception("Cannot stablish connection with DB")
+                log.exception("Cannot establish connection with DB")
                 raise
             else:
                 self.db_connect.autocommit = self.db_autocommit
                 log.info(
-                    f"Stablished connection with DB, status code: {self.db_connect.status}"
+                    f"Established connection with DB, status code: {self.db_connect.status}"
                 )
                 result = True
         else:
             log.debug(
-                f"Connection with DB already stablished, status code: {self.db_connect.status}"
+                f"Connection with DB already established, status code: {self.db_connect.status}"
             )
             result = True
         return result
 
     def validate_metric_store(self) -> bool:
         """Vaidate that both TimescaleDB extension and a hypertable for storing monitoring metrics
-        are properly crated
+        are properly created
 
         Returns:
-            bool: Return True when DB is ready for sotring our metrics
+            bool: Return True when DB is ready for storing our metrics
         """
         result = False
         hypertable_result = None
@@ -82,7 +82,7 @@ class Store_manager:
             with self.db_connect.cursor(
                 cursor_factory=extras.RealDictCursor
             ) as db_cursor:
-                # Check in database catalog the metainformation of our table
+                # Check the metainformation of our table in the database catalog 
                 db_cursor.execute(
                     f"SELECT * FROM _timescaledb_catalog.hypertable WHERE table_name='{self.db_table}'"
                 )
@@ -94,14 +94,14 @@ class Store_manager:
             raise
         else:
             if hypertable_result and hypertable_result["num_dimensions"] == 2:
-                log.info(f"Database ready for storing metrics, all resources crated")
+                log.info(f"Database ready for storing metrics, all resources created")
                 log.info(
                     f"Extra details in catalog (_timescaledb_catalog.hypertable):\n\t{hypertable_result}"
                 )
                 result = True
             else:
                 log.error(
-                    f"Something wrong with DB definitions, '{self.db_table}' is not a hypertable or does not have two dimension"
+                    f"Something wrong with DB definitions, '{self.db_table}' is not a hypertable or does not have two dimensions"
                 )
 
         return result
@@ -139,7 +139,7 @@ class Store_manager:
                 )
 
         except (psycopg2.Error, Exception):
-            log.exception("TimescaleDB extension could not be crated")
+            log.exception("TimescaleDB extension could not be created")
             raise
         else:
             log.info("All DB resources were created")
@@ -175,7 +175,7 @@ class Store_manager:
         Args:
             metrics (list[dict]): List of web metrics to store
         """
-        # TODO: Analize the viability to substitue io.StringIO() by mmap.mmap()
+        # TODO: Analize the viability to substitue io.StringIO() with mmap.mmap()
 
         log.debug(f"Inserting, in DB, metrics:\n\t{metrics}")
         metrics_stringIO = io.StringIO()
@@ -184,19 +184,23 @@ class Store_manager:
             # log.debug(f"Convert to CSV and insert in metrics_stringIO: {metric_csv}")
             # TODO: URGENT! Substitute metric_dict.values() by specific calls to the keys, for ensuring the right field's order
             metrics_stringIO.write(metric_csv)
-        log.debug(f"metrics_stringIO: {metrics_stringIO.getvalue()}")
-        metrics_stringIO.seek(0)
 
-        with self.db_connect.cursor() as db_cursor:
-            log.debug(
-                "Copying metrics from metrics_stringIO to DB with db_cursor.copy_from()"
-            )
-            try:
-                db_cursor.copy_from(metrics_stringIO, self.db_table, sep=",")
-            except (psycopg2.Error, Exception):
-                log.exception("Could not copy metrics in DB")
-                raise
-            else:
-                log.info("Metrics copied in DB")
-            finally:
-                metrics_stringIO.close()
+        log.debug(f"metrics_stringIO: {metrics_stringIO.getvalue()}")
+        if len(metrics_stringIO.getvalue()) > 0:
+            metrics_stringIO.seek(0)
+
+            with self.db_connect.cursor() as db_cursor:
+                log.debug(
+                    "Copying metrics from metrics_stringIO to DB with db_cursor.copy_from()"
+                )
+                try:
+                    db_cursor.copy_from(metrics_stringIO, self.db_table, sep=",")
+                except (psycopg2.Error, Exception):
+                    log.exception("Could not copy metrics in DB")
+                    raise
+                else:
+                    log.info("Metrics copied in DB")
+                finally:
+                    metrics_stringIO.close()
+        else:
+            log.info("Nothing to copy in DB")

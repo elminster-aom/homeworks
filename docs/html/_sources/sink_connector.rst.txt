@@ -1,0 +1,7 @@
+sink\_connector module
+======================
+
+.. automodule:: sink_connector
+   :members:
+   :undoc-members:
+   :show-inheritance:
