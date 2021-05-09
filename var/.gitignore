@@ -1,0 +1,7 @@
+# Ignore everything in this directory but its .gitignore file
+#
+# See: How can I add an empty directory to a Git repository?,
+# https://stackoverflow.com/a/932982
+*
+# Except this file
+!.gitignore
