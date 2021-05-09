@@ -50,12 +50,19 @@ On the other hand, for ensuring that our storage is optimized for metrics (time-
 It initializes the environment, creating the required resources on Kafka and Postgres services.
 
 ### How to install
-1. Clone or download a ZIP of this project
-2. Ensure that you have the right version of Python, see below
-3. Enable Python Virtual Environment, e.g.:
+1. Clone or download a ZIP of this project, e.g.:
 ```shell
-$ source bin/activate
+$ git clone git@github.com:elminster-aom/homeworks.git
 ```
+2. Ensure that you have the right version of Python (v3.9, see below)
+3. Create a Python Virtual Environment and install required packages, e.g.:
+```shell
+$ python3 -m venv homeworks \
+&& source homeworks/bin/activate \
+&& python3 -m pip install --requirement homeworks/requirements.txt
+```
+
+Further details on [Installing packages using pip and virtual environments](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments)
 
 ## How to set up and run
 1. Create (if doesn't exist already) a Kafka and PostgresSQL service ([aiven.io] is an interesting option)
