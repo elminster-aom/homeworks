@@ -102,7 +102,7 @@ class Communication_manager:
         return result
 
     def produce_message(self, message_dict: dict):
-        """Send a message with metrics from web monitoring to Kafka 
+        """Send a message with metrics from web monitoring to Kafka
         * Raise exception if message could no be created (No guarantee is made about
         the completion of message sent)
         * Message is synchronous (`producer.flush()`) for simplifying the code,
@@ -149,7 +149,7 @@ class Communication_manager:
             )
             raise
         else:
-            log.info(f"Message sent")
+            log.info(f"Message sent to Kafka")
             log.debug(
                 f"Message flushed, kafka_producer.send() response was '{response}'"
             )

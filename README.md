@@ -21,7 +21,9 @@ In addition, a 3rd program is responsible for initializing the environment:
  * [setup.py](https://github.com/elminster-aom/homeworks/blob/main/docs/setup.md)
 
 ### web_monitor_agent.py
-This component is designed in a way that allows several copies of it run as processes on the same or several independent systems. Each process creates a bunch of threads which monitor the listed URLs (1 threads monitors 1 URL). All threads publish to the same Kafka topic.
+This component is designed in a way that allows several copies of it run as processes on the same or several independent systems. Each process creates a bunch of threads which monitor the listed URLs (1 threads monitors 5 URLs). All threads publish to the same Kafka topic.
+
+:information_source: The numbers of URLs monitored by thread (5) are tuned based on the _HTTP GET_ request timeout (15 seconds). If 4 of URLs assigned to a thread suffer timeouts, the 5th doesn't get its next monitoring check delayed (e.g.: 5 URLs * 15 max. time check = 60 seconds == `MONITORING_RETRY_SECS=60`). 
 
 Note: Its main restriction is max. number of open sockets.
  
