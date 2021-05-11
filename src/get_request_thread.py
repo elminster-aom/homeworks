@@ -27,20 +27,12 @@ class Get_request_thread(threading.Thread):
         self.get_request_timeout = 15
         log.debug(f"{self.name}: Instantiated for URLs: {urls}")
 
-    def run(self):
-        log.info(f"{self.name}: Starting monitoring")
-        while True:
-            self.sampling_data_dict["time"] = datetime.datetime.now(
-                tz=tz.tzlocal()
-            ).strftime("%Y-%m-%d %H:%M:%S.%f%z")
-            try:
-                get_request = requests.get(
-                    self.sampling_data_dict["web_url"], timeout=self.get_request_timeout
-                )
-                self.sampling_data_dict["http_status"] = get_request.status_code
-                self.sampling_data_dict[
-                    "resp_time"
-                ] = get_request.elapsed.total_seconds()
+    def __delete__(self):
+        """Close connection with Kafka when our object instance is destroyed"""
+        # self.metrics_sender.close_producer()
+        pass
+
+    @staticmethod
     def initialize_sampling_data(urls: list[str]) -> list[dict]:
         """Initialize sampling data structure with default values
 

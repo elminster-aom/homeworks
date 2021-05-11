@@ -83,6 +83,7 @@ def main() -> int:
             urls = config.monitored_url_targets[i : i + slice]
             log.debug(f"Creating Thread for URLs: {urls}")
             thread = Get_request_thread(urls)
+            thread.daemon = True  # Daemons are killed when the main program exits
             thread.start()
             threads.append(thread)
 
