@@ -17,5 +17,5 @@ POSTGRES_SSL=require
 POSTGRES_TABLE=web_health_metrics
 
 # Static variables, do NOT modify the lines below
-POSTGRES_URI=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@p${POSTGRES_HOST}:${POSTGRES_PORT}/defaultdb?sslmode=${POSTGRES_SSL}
+POSTGRES_URI=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/defaultdb?sslmode=${POSTGRES_SSL}
 KAFKA_SERVICE_URI=${KAFKA_HOST}:${KAFKA_PORT}
