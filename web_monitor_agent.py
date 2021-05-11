@@ -62,7 +62,7 @@ def waitting_threads_ending_loop(threads: list[Get_request_thread]):
     for thread in threads:
         thread.join()
 
-    log.warning("All threads stoppped by themselves")
+    log.warning("All threads stopped by themselves")
 
 
 def main() -> int:
@@ -73,10 +73,16 @@ def main() -> int:
     """
     result = 1
     threads = []
+    slice = 5  # Max. number of URLs managed by a thread
     try:
-        for url in config.monitored_url_targets:
-            log.debug(f"Creating Thread for URL: {url}")
-            thread = Get_request_thread(url)
+        for i in range(0, len(config.monitored_url_targets), slice):
+            """From total list of URLs, it is splitted in slices
+            of 5 URLs (max.). One individual thread is created for
+            monitoring every slice
+            """
+            urls = config.monitored_url_targets[i : i + slice]
+            log.debug(f"Creating Thread for URLs: {urls}")
+            thread = Get_request_thread(urls)
             thread.start()
             threads.append(thread)
 
