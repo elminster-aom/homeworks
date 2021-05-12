@@ -47,13 +47,16 @@ def init_logging():
     logging.raiseExceptions = False
 
 
-def sink_data():
+def sink_data(metrics_retriever: None, metrics_inserter: None):
     """While connection to the communication bus is still established, batches of messages
     are retrieved and stored in the DB
-    * Loop can be interrupted with a Ctr+Break
+    Loop can be interrupted with a Ctr+Break
+
+    Args:
+        metrics_retriever (Communication_manager): Manages Kafka communication
+
+        metrics_inserter (Store_manager): Manages PostgresSQL storage
     """
-    metrics_retriever = Communication_manager()
-    metrics_inserter = Store_manager()
     while True:
         try:
             messages = metrics_retriever.consume_messages()
@@ -73,13 +76,21 @@ def main() -> int:
         int: Return 0 if all ran without issues (Note: Ctrl+break is considered a normal way to stop it and it should exit with 0)
     """
     result = 0
+    retriever = None
+    inserter = None
     try:
         # TODO: URGENT! Run next call under 'daemon.DaemonContext()' context, following specifications PEP 3143
-        sink_data()
+        retriever = Communication_manager()
+        inserter = Store_manager()
+        sink_data(retriever, inserter)
     except Exception:
         result = 1
         log.exception("Unexpected error")
     finally:
+        if retriever:
+            retriever.close_consumer()
+        if inserter:
+            inserter.close()
         return result
 
 

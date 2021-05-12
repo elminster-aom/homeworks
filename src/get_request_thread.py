@@ -29,8 +29,7 @@ class Get_request_thread(threading.Thread):
 
     def __delete__(self):
         """Close connection with Kafka when our object instance is destroyed"""
-        # self.metrics_sender.close_producer()
-        pass
+        self.metrics_sender.close_producer()
 
     @staticmethod
     def initialize_sampling_data(urls: list[str]) -> list[dict]:
@@ -66,6 +65,12 @@ class Get_request_thread(threading.Thread):
 
     def monitor_one_url(self, sample: dict):
         """By `url_num`, identify which URL ot monitor and collect its revelant info
+
+        Note: requests.get() can raise "During handling of the above exception, another exception occurred"
+        for error DNS_PROBE_FINISHED_NXDOMAIN.
+        Based on https://stackoverflow.com/a/52725410 and  https://www.python.org/dev/peps/pep-0409/,
+        the only solution seems to be supressing context but I discard it because it would
+        make difficult to debug other errors, therefore I decided to NOT not apply PEP 409
 
         Args:
             url_num (int): Index array for `self.sampling_data`

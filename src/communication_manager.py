@@ -18,14 +18,16 @@ class Communication_manager:
         self.kafka_access_key = config.kafka_access_key
         self.kafka_ca_cert = config.kafka_ca_cert
         self.kafka_consumer = None
+        self.kafka_producer = None
         self.group_id = "communication_manager_1"
         self.kafka_security_protocol = "SSL"
         self.kafka_topic_name = config.kafka_topic_name
 
     def __del__(self) -> None:
-        self.close()
+        self.close_consumer()
+        self.close_producer()
 
-    def close(self, autocommit=True) -> None:
+    def close_consumer(self, autocommit=True) -> None:
         """Close the consumer connection, waiting indefinitely for any needed cleanup.
 
         Args:
@@ -35,8 +37,14 @@ class Communication_manager:
         """
         if self.kafka_consumer:
             self.kafka_consumer.close(autocommit)
-            kafka_consumer = None
+            self.kafka_consumer = None
             log.debug("Consumer connection was closed")
+
+    def close_producer(self) -> None:
+        if self.kafka_producer:
+            self.kafka_producer.close()
+            self.kafka_producer = None
+            log.debug("Producer connection was closed")
 
     def initialize_metrics_communication(self):
         """Create required topic `self.kafka_topic_name` for posting/retrieving
@@ -81,7 +89,7 @@ class Communication_manager:
                 log.debug("Connection with KafkaAdminClient was closed")
 
     def validate_metrics_communication(self) -> bool:
-        """Vaidate that the Kafka topic is defined
+        """Validate that the Kafka topic is defined
 
         Returns:
             bool: Return True when the topic is defined
@@ -98,7 +106,35 @@ class Communication_manager:
             if self.kafka_topic_name in topics:
                 result = True
         finally:
-            self.close()
+            self.close_consumer()
+        return result
+
+    def connect_producer(self) -> bool:
+        result = False
+        if (
+            self.kafka_producer == None
+            or self.kafka_producer.bootstrap_connected() != True
+        ):
+            log.debug("Going to connect producer")
+            try:
+                self.kafka_producer = kafka.KafkaProducer(
+                    bootstrap_servers=config.kafka_uri,
+                    security_protocol=self.kafka_security_protocol,
+                    ssl_cafile=self.kafka_ca_cert,
+                    ssl_certfile=self.kafka_access_cert,
+                    ssl_keyfile=self.kafka_access_key,
+                )
+            except Exception:
+                log.exception(
+                    f"Producer cannot establish connection with Kafka, on uri: '{config.kafka_uri}'"
+                )
+                raise
+            else:
+                log.debug("Established connection with KafkaProducer")
+                result = True
+        else:
+            log.debug("Producer is already connected")
+            result = True
         return result
 
     def produce_message(self, message_dict: dict):
@@ -114,20 +150,19 @@ class Communication_manager:
         Args:
             message_dict (dict): Metrics from web monitoring
         """
+
         try:
-            log.debug(
-                f"Sending message '{message_dict}', on topic '{self.kafka_topic_name}'"
-            )
+            log.debug(f"Serializing '{message_dict}'")
             message_json = json.dumps(message_dict)
         except json.JSONDecodeError:
-            log.exception(f"JSON could not encode message '{message_dict}'")
+            log.exception(f"JSON could not srialize message '{message_dict}'")
             raise
         else:
             log.debug(
                 f"Serialized message object (message_dict) to a JSON formatted string"
             )
 
-        kafka_producer = None
+        self.connect_producer()
         try:
             kafka_producer = kafka.KafkaProducer(
                 bootstrap_servers=config.kafka_uri,
@@ -136,13 +171,15 @@ class Communication_manager:
                 ssl_certfile=self.kafka_access_cert,
                 ssl_keyfile=self.kafka_access_key,
             )
-            log.debug("Established connection with KafkaProducer. Sending message")
-            response = kafka_producer.send(
+            log.debug(f"Sending JSON message to topic '{self.kafka_topic_name}'")
+            response = self.kafka_producer.send(
                 self.kafka_topic_name, message_json.encode("utf-8")
             )
             log.debug("Message sent, waiting for kafka_producer.flush()")
             kafka_producer.flush(timeout=10.0)
-
+            log.debug(
+                f"Message flushed, kafka_producer.send() response was '{response}'"
+            )
         except Exception:
             log.exception(
                 f"Producer could not send message to Kafka, on topic '{self.kafka_topic_name}'"
@@ -150,37 +187,30 @@ class Communication_manager:
             raise
         else:
             log.info(f"Message sent to Kafka")
-            log.debug(
-                f"Message flushed, kafka_producer.send() response was '{response}'"
-            )
-        finally:
-            if kafka_producer:
-                kafka_producer.close()
-                log.debug("Connection with KafkaProducer was closed")
 
     def connect_consumer(self) -> bool:
         """Establish a permanent connection with Kafka for consuming (retrieving) messages
         * Raise exception in case of communication problems
         * `auto_offset_reset` is set to "latest" instead of "earliest" because we found that a
         gap in data is easier to detect than to duplicate registers, see:
-          ** How Postgresql COPY TO STDIN With CSV do on conflic do update? https://stackoverflow.com/a/48020691
+          ** How Postgresql COPY TO STDIN With CSV do on conflict do update? https://stackoverflow.com/a/48020691
           ** UPSERTs not working correctly #100, https://github.com/timescale/timescaledb/issues/100
 
         * This call is optional, `consume_messages()` establishes already this connection
         automatically
 
         Returns:
-            bool: Return `True` when the bootstrap is succesfully connected
+            bool: Return `True` when the bootstrap is successfully connected
         """
-        # TODO: Keep a permanent track of processed messages, therefore auto_offset_reset can be set to "latest" without potentional duplication
-        # TODO: URGENT! Enabling group_id!=None goes in unexpected scenarion where messages are not cosumed. Investigate further
+        # TODO: Keep a permanent track of processed messages, therefore auto_offset_reset can be set to "latest" without potential duplication
+        # TODO: URGENT! Enabling group_id!=None goes in unexpected scenario where messages are not consumed. Investigate further
         result = False
         if (
             self.kafka_consumer == None
             or self.kafka_consumer.bootstrap_connected() != True
         ):
             try:
-                log.debug("Consumer was not connected")
+                log.debug("Going to connect consumer")
                 # Reference about enable_auto_commit=False, see https://www.thebookofjoel.com/python-kafka-consumers
                 self.kafka_consumer = kafka.KafkaConsumer(
                     self.kafka_topic_name,
@@ -220,7 +250,7 @@ class Communication_manager:
         number_retries_without_incoming = 0
         messages_list = []
         try:
-            # TODO: Validate that these values are optiomal (Load test required for better tuning)
+            # TODO: Validate that these values are optimal (Load test required for better tuning)
             while number_retries_without_incoming < 2 and len(messages_list) < 100:
                 log.debug("Checking for new messages")
                 responses = self.kafka_consumer.poll(timeout_ms=1000)
