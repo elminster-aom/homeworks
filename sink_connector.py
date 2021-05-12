@@ -57,7 +57,7 @@ def sink_data():
     while True:
         try:
             messages = metrics_retriever.consume_messages()
-            metrics_inserter.insert_metric_copy(messages)
+            metrics_inserter.insert_metrics_batch(messages)
         except KeyboardInterrupt:
             log.info("Keyboard interruption received (Ctrl+break)")
             break
@@ -67,7 +67,7 @@ def sink_data():
 
 
 def main() -> int:
-    """Main pogram
+    """Main program
 
     Returns:
         int: Return 0 if all ran without issues (Note: Ctrl+break is considered a normal way to stop it and it should exit with 0)

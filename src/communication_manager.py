@@ -222,7 +222,7 @@ class Communication_manager:
         try:
             # TODO: Validate that these values are optiomal (Load test required for better tuning)
             while number_retries_without_incoming < 2 and len(messages_list) < 100:
-                log.debug("Receiving messages")
+                log.debug("Checking for new messages")
                 responses = self.kafka_consumer.poll(timeout_ms=1000)
                 # self.kafka_consumer.commit()  # Commit the offset of last processed message
                 log.debug(f"kafka_consumer.poll() response: {responses}")
