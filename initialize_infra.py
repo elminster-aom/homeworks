@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Independent module for initializing the environment. It has to be run only once (per environment) before running the main program.
-1. It assumes that PosgresSQL is up and running and we have administratitve authorization
-2. It assumes that Kafka is up and running and we have administratitve authorization
+1. It assumes that PostgresSQL is up and running and we have administrative authorization
+2. It assumes that Kafka is up and running and we have administrative authorization
 3. It enables TimescaleDB extension in PostgresSQL
 4. It creates a table for storing web_health monitoring
 5. It turns previous table in a partitioned hypertable for storing monitoring metrics
@@ -52,7 +52,7 @@ def init_logging():
 
 
 def main() -> int:
-    """Main pogram
+    """Main program
 
     Returns:
         int: Return 0 if all setup ran without problems

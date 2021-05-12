@@ -18,7 +18,7 @@ There are 2 main programs:
  * [sink_connector.py](https://github.com/elminster-aom/homeworks/blob/main/docs/sink_connector.md)
 
 In addition, a 3rd program is responsible for initializing the environment:
- * [setup.py](https://github.com/elminster-aom/homeworks/blob/main/docs/setup.md)
+ * [initialize_infra.py](https://github.com/elminster-aom/homeworks/blob/main/docs/initialize_infra.md)
 
 ### web_monitor_agent.py
 This component is designed in a way that allows several copies of it run as processes on the same or several independent systems. Each process creates a bunch of threads which monitor the listed URLs (1 threads monitors 5 URLs). All threads publish to the same Kafka topic.
@@ -48,7 +48,7 @@ On the other hand, for ensuring that our storage is optimized for metrics (time-
 > * _Right-sized chunks_ (two-dimensional data partitions) on single nodes to ensure fast ingest even at large data sizes.
 > * _Parallelized operations_ across chunks and servers.
 
-### setup.py
+### initialize_infra.py
 It initializes the environment, creating the required resources on Kafka and Postgres services.
 
 ### How to install
@@ -76,9 +76,9 @@ $ nano env_example
 $ mv env_example .env
 $ chmod 0600 .env
 ```
-3. Run `setup.py` for initializing the infrastructure _\*_
+3. Run `initialize_infra.py` for initializing the infrastructure _\*_
 ```shell
-$ ./setup.py
+$ ./initialize_infra.py
 ```
 4. Start collecting metrics using `web_monitor_agent.py` _\*\*_
 ```shell
