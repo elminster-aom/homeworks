@@ -104,12 +104,12 @@ class Get_request_thread(threading.Thread):
                     )
                     sample["http_status"] = 503
                     pass
-                else:
-                    log.debug(
-                        f"{self.name}, {sample['web_url']}: Collected metrics at {sample['time']}"
-                    )
-                    self.publish_data(sample)
-                    log.debug(f"{self.name}, {sample['web_url']}: Published metrics")
+
+                log.debug(
+                    f"{self.name}, {sample['web_url']}: Collected metrics at {sample['time']}"
+                )
+                self.publish_data(sample)
+                log.debug(f"{self.name}, {sample['web_url']}: Published metrics")
             log.debug(
                 f"{self.name}: Goes to sleep for {self.monitored_url_retry_secs} seconds now"
             )

@@ -37,9 +37,9 @@ This component is designed thinking of performance. Since its code is not Thread
 
 it has been implemented as a mono-thread which intensifies memory usage for a better performance.
 
-Therefore, it consumes Kafka messages in windows of either time or number of messages and stores them (all of them at once) in a Postgres database, where transactional commit is disabled (we relax this setting since all our SQL operations are [ACID](https://en.wikipedia.org/wiki/ACID)). 
+Therefore, it consumes Kafka messages in windows of either time or number of messages and stores them in group (as a batch) in a Postgres database, where transactional commit is disabled (we relax this setting since all our SQL operations are [ACID](https://en.wikipedia.org/wiki/ACID)). 
 
-Additionally, performance can be further improved if both Kafka and Postgres components work independently in a continuous stream of data, for example using shared memory ([mmap system call](https://man7.org/linux/man-pages/man2/mmap.2.html)).
+Additionally, performance can be further improved if both Kafka and Postgres components work independently in a continuous stream of data, for example using `Store_manager.insert_metrics_copy()` and/or implementing shared memory ([mmap system call](https://man7.org/linux/man-pages/man2/mmap.2.html)).
 
 On the other hand, for ensuring that our storage is optimized for metrics (time-series data) and can store them for long periods of time, we took profit of [TimescaleDB](https://docs.timescale.com/latest/introduction) plug-in, e.g:
 > **Scalable**
@@ -91,6 +91,19 @@ $ ./sink_connector.py
 _\*_ It needs to be run only once per environment, for initialization reasons
 
 _\*\*_ They can run on the same server or different ones
+
+## Local validation tests
+They can be run like:
+```shell
+$ cd homeworks
+$ source bin/activate
+
+# Validate that infrastructure is properly created
+$ python3 -m pytest tests.py
+
+# Validate that all parts work together: URL monitoring, Kafka communication and DB storing
+$ ./tests/integration_test.sh
+```
 
 ### .env
 * **_WORKSPACE_PATH**: Full path to the project (e.g.: `/home/user1/homeworks`)
