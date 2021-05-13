@@ -82,7 +82,7 @@ class Communication_manager:
             raise
         else:
             log.info(f"Topic '{self.kafka_topic_name}' created")
-            log.debug(f"kafka_admin_client.create_topics' response: {responses}")
+            log.debug(f"kafka_admin_client.create_topics() response: {responses}")
         finally:
             if kafka_admin_client:
                 kafka_admin_client.close()

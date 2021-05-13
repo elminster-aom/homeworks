@@ -48,8 +48,6 @@ def main() -> int:
         result += 1
         raise
     finally:
-        if communication_manager:
-            communication_manager.close()
         return result
 
 
