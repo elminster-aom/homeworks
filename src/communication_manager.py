@@ -4,10 +4,10 @@ Its purpose is to isolate communication service from the main application logic
 
 import kafka
 import json
-import logging
 from . import config
+from . import logging_console
 
-log = logging.getLogger("homeworks")
+log = logging_console.getLogger("homeworks")
 
 
 class Communication_manager:

@@ -1,12 +1,12 @@
-"""All paremetrization for our monintoring tool is centrazlized here
+"""All parametrization for our monintoring tool is centralized here
 """
 # TODO: Use a more secure storage for secrets (e.g. hashicorp vault), currently security is implemented as read-only access for file-owner on .env
 # TODO: Encrypt password after using them (accessing them with a method) so that they have less chance to appear clear-text, e.g. with system dump
 
 import dotenv
-import logging
+from . import logging_console
 
-log = logging.getLogger("homeworks")
+log = logging_console.getLogger("homeworks")
 
 
 def load_file_into_list(file_path: str) -> list[str]:
@@ -43,7 +43,7 @@ monitored_url_targets = load_file_into_list(_dotenv_dict["MONITORING_TARGETS_PAT
 monitored_url_regex = _dotenv_dict["MONITORING_TARGETS_REGEX"]
 monitored_url_retry_secs = _dotenv_dict["MONITORING_RETRY_SECS"]
 
-# Delete temporary varialbe, it was only needed for initialization
+# Delete temporary variable, it was only needed for initialization
 del _dotenv_dict
 
 log.debug(
