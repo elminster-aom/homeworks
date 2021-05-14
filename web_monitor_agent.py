@@ -14,7 +14,6 @@ import src.logging_console as logging_console
 from src.get_request_thread import Get_request_thread
 
 log = logging_console.getLogger("homeworks")
-log.setLevel(logging_console.DEBUG)  # set to DEBUG for early-stage debugging
 
 
 def waitting_threads_ending_loop(threads: list[Get_request_thread]):

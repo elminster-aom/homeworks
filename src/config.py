@@ -6,8 +6,6 @@
 import dotenv
 from . import logging_console
 
-log = logging_console.getLogger("homeworks")
-
 
 def load_file_into_list(file_path: str) -> list[str]:
     """It reads the URLs of our monitoring targets (Webs to monitor)
@@ -23,9 +21,7 @@ def load_file_into_list(file_path: str) -> list[str]:
         with open(file_path, "rt") as f:
             lines = [line.rstrip() for line in f]
     except IOError:
-        log.exception(f"Could not read config file '{file_path}'")
-        raise
-
+        raise IOError(f"Could not read config file '{file_path}'")
     return lines
 
 
@@ -39,13 +35,10 @@ kafka_access_key = _dotenv_dict["KAFKA_ACCESS_KEY"]
 kafka_ca_cert = _dotenv_dict["KAFKA_CA_CERTIFICATE"]
 kafka_uri = _dotenv_dict["KAFKA_SERVICE_URI"]
 kafka_topic_name = _dotenv_dict["KAFKA_TOPIC_NAME"]
+monitored_log_level = _dotenv_dict["MONITORING_LOG_LEVEL"]
 monitored_url_targets = load_file_into_list(_dotenv_dict["MONITORING_TARGETS_PATH"])
 monitored_url_regex = _dotenv_dict["MONITORING_TARGETS_REGEX"]
 monitored_url_retry_secs = _dotenv_dict["MONITORING_RETRY_SECS"]
 
 # Delete temporary variable, it was only needed for initialization
 del _dotenv_dict
-
-log.debug(
-    f"db_uri={db_uri}, db_table={db_table} monitored_url_targets={monitored_url_targets}"
-)

@@ -1,11 +1,6 @@
 import logging
 import sys
-
-DEBUG = logging.DEBUG
-INFO = logging.INFO
-WARNING = logging.WARNING
-ERROR = logging.ERROR
-FATAL = logging.FATAL
+from . import config
 
 
 def getLogger(name=None) -> logging.Logger:
@@ -13,6 +8,27 @@ def getLogger(name=None) -> logging.Logger:
 
 
 log = getLogger("homeworks")
+
+
+def get_log_level() -> int:
+    """Convert configuration string in valid logging level value
+
+    Returns:
+        int: logging level value
+    """
+    if config.monitored_log_level == "DEBUG":
+        result = logging.DEBUG
+    elif config.monitored_log_level == "INFO":
+        result = logging.INFO
+    elif config.monitored_log_level == "WARNING":
+        result = logging.WARNING
+    elif config.monitored_log_level == "ERROR":
+        result = logging.ERROR
+    elif config.monitored_log_level == "FATAL":
+        result = logging.FATAL
+    else:
+        result = None
+    return result
 
 
 def init_logging():
@@ -47,3 +63,5 @@ def init_logging():
     log.addHandler(logging_handler_err)
     # Prevent exception logging while emitting
     logging.raiseExceptions = False
+
+    log.setLevel(get_log_level())

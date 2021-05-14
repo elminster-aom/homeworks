@@ -13,7 +13,6 @@ from src.store_manager import Store_manager
 from src.communication_manager import Communication_manager
 
 log = logging_console.getLogger("homeworks")
-log.setLevel(logging_console.INFO)  # set to DEBUG for early-stage debugging
 
 
 def main() -> int:
