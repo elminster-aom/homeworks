@@ -1,16 +1,16 @@
 import datetime
-import logging
 import re
 import requests
 import threading
 import time
 from . import config
+from . import logging_console
 from src.communication_manager import Communication_manager
 
 # See: How to create tzinfo when I have UTC offset? https://stackoverflow.com/a/28270767
 from dateutil import tz
 
-log = logging.getLogger("homeworks")
+log = logging_console.getLogger("homeworks")
 
 
 class Get_request_thread(threading.Thread):

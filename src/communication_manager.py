@@ -4,10 +4,10 @@ Its purpose is to isolate communication service from the main application logic
 
 import kafka
 import json
-import logging
 from . import config
+from . import logging_console
 
-log = logging.getLogger("homeworks")
+log = logging_console.getLogger("homeworks")
 
 
 class Communication_manager:
@@ -82,7 +82,7 @@ class Communication_manager:
             raise
         else:
             log.info(f"Topic '{self.kafka_topic_name}' created")
-            log.debug(f"kafka_admin_client.create_topics' response: {responses}")
+            log.debug(f"kafka_admin_client.create_topics() response: {responses}")
         finally:
             if kafka_admin_client:
                 kafka_admin_client.close()
@@ -95,8 +95,15 @@ class Communication_manager:
             bool: Return True when the topic is defined
         """
         result = False
+        did_we_connect_consumer = False
         try:
-            self.connect_consumer()
+            if (
+                self.kafka_consumer == None
+                or self.kafka_consumer.bootstrap_connected() != True
+            ):
+                did_we_connect_consumer = True
+                self.connect_consumer()
+
             topics = self.kafka_consumer.topics()
 
         except Exception:
@@ -106,8 +113,9 @@ class Communication_manager:
             if self.kafka_topic_name in topics:
                 result = True
         finally:
-            self.close_consumer()
-        return result
+            if did_we_connect_consumer:
+                self.close_consumer()
+            return result
 
     def connect_producer(self) -> bool:
         result = False
@@ -137,49 +145,60 @@ class Communication_manager:
             result = True
         return result
 
+    @staticmethod
+    def serialize_and_encode(message_dict: dict) -> str:
+        """Before sending messages to Kafka, it needs to be serialize to a string,
+        in our case is serialize to a JSON string; and encode to utf-8 (Default Python
+        Unicode is not supported by Kafka library)
+
+        Args:
+            message_dict (dict): Object to send to kafka, which it is going to be
+            processed here
+
+        Returns:
+            str: Result after serializing and encoding `message_dict`
+        """
+        result = None
+        log.debug(f"Serializing '{message_dict}'")
+        try:
+            result = json.dumps(message_dict).encode("utf-8", errors="strict")
+        except json.JSONDecodeError:
+            log.exception(f"JSON could not serialize message '{message_dict}'")
+            raise
+        except UnicodeDecodeError:
+            log.exception(f"Message '{message_dict}' could not be encoded to utf-8")
+            raise
+        else:
+            log.debug(
+                f"Serialized message object (message_dict) to a JSON formatted string and encoded to utf-8"
+            )
+        return result
+
     def produce_message(self, message_dict: dict):
         """Send a message with metrics from web monitoring to Kafka
         * Raise exception if message could no be created (No guarantee is made about
         the completion of message sent)
         * Message is synchronous (`producer.flush()`) for simplifying the code,
         since threads sample metrics less often than 5-6 times per minute
-        * Message is encoded as JSON
         * Kafka Key is unset, since message doesn't
         require to be sorted
 
         Args:
             message_dict (dict): Metrics from web monitoring
         """
-
-        try:
-            log.debug(f"Serializing '{message_dict}'")
-            message_json = json.dumps(message_dict)
-        except json.JSONDecodeError:
-            log.exception(f"JSON could not srialize message '{message_dict}'")
-            raise
-        else:
-            log.debug(
-                f"Serialized message object (message_dict) to a JSON formatted string"
-            )
-
         self.connect_producer()
+        encoded_message = self.serialize_and_encode(message_dict)
         try:
-            kafka_producer = kafka.KafkaProducer(
-                bootstrap_servers=config.kafka_uri,
-                security_protocol=self.kafka_security_protocol,
-                ssl_cafile=self.kafka_ca_cert,
-                ssl_certfile=self.kafka_access_cert,
-                ssl_keyfile=self.kafka_access_key,
+            log.debug(f"Sending message to topic '{self.kafka_topic_name}'")
+            response = self.kafka_producer.send(self.kafka_topic_name, encoded_message)
+            log.debug(f"Message sent, response was: {response}")
+            self.kafka_producer.flush(timeout=10.0)
+            log.debug("Message flushed")
+        except kafka.errors.KafkaTimeoutError:
+            log.exception(
+                "Kafka infraestructure setup looks incomplete, e.g. Is our topic defined?"
             )
-            log.debug(f"Sending JSON message to topic '{self.kafka_topic_name}'")
-            response = self.kafka_producer.send(
-                self.kafka_topic_name, message_json.encode("utf-8")
-            )
-            log.debug("Message sent, waiting for kafka_producer.flush()")
-            kafka_producer.flush(timeout=10.0)
-            log.debug(
-                f"Message flushed, kafka_producer.send() response was '{response}'"
-            )
+            raise
         except Exception:
             log.exception(
                 f"Producer could not send message to Kafka, on topic '{self.kafka_topic_name}'"

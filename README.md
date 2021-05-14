@@ -115,6 +115,7 @@ IMPORTANT! Do not forget to set *service.key* to read-only for file owner and ex
 * **KAFKA_HOST**: Kafka hostname (e.g.: `kafka.aivencloud.com`), available on your [Aiven console](https://console.aiven.io/): _Services -> \<Your Kafka\> -> Overview -> Host_
 * **KAFKA_PORT**: Kafka TCP listener port (e.g.: `2181`), available on your [Aiven console](https://console.aiven.io/): _Services -> \<Your Kafka\> -> Overview -> Port_
 * **KAFKA_TOPIC_NAME**: A unique string which identifies the Kafka topic for this application (e.g. `web_monitoring`)
+* **MONITORING_LOG_LEVEL=INFO**: Log level in console, valid values: DEBUG, INFO, WARNING, ERROR and FATAL
 * **MONITORING_RETRY_SECS**: How often *web_monitor_agent.py* will check the target URLs (in seconds) (e.g.: `60`)
 * **MONITORING_TARGETS_PATH**:  Full path to text file with the target URLs, webs to monitor (e.g.: `${_WORKSPACE_PATH}/tests/list_web_domains.txt`)
 * **MONITORING_TARGETS_REGEX**: String with a Regex expression *web_monitor_agent.py* will look for a match on HTTP GET request's body

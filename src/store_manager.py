@@ -1,10 +1,10 @@
 import io
-import logging
 import psycopg2
 from . import config
+from . import logging_console
 from psycopg2 import extras
 
-log = logging.getLogger("homeworks")
+log = logging_console.getLogger("homeworks")
 
 
 class Store_manager:
