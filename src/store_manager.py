@@ -1,10 +1,10 @@
 import io
-import logging
 import psycopg2
 from . import config
+from . import logging_console
 from psycopg2 import extras
 
-log = logging.getLogger("homeworks")
+log = logging_console.getLogger("homeworks")
 
 
 class Store_manager:
@@ -82,7 +82,7 @@ class Store_manager:
             with self.db_connect.cursor(
                 cursor_factory=extras.RealDictCursor
             ) as db_cursor:
-                # Check the metainformation of our table in the database catalog 
+                # Check the metainformation of our table in the database catalog
                 db_cursor.execute(
                     f"SELECT * FROM _timescaledb_catalog.hypertable WHERE table_name='{self.db_table}'"
                 )
@@ -164,20 +164,53 @@ class Store_manager:
             # Otherwise: psycopg2.errors.InvalidTextRepresentation: invalid input syntax for type boolean: "None"
             return r"\N"
 
-    def insert_metric_copy(self, metrics: list[dict]) -> None:
+    def insert_metrics_batch(self, metrics: list[dict]) -> None:
         """Store a list of dictionary elements (the collected web metrics) in DB
-        * Implementation is based on io.StringIO() and psycopg2.cursor.copy_from() basec on:
+        Implementation is based on direct inserts on DB
+
+        Args:
+            metrics (list[dict]): List of web metrics to store
+        """
+
+        if len(metrics) > 0:
+            log.debug(f"Inserting, in DB, metrics:\n\t{metrics}")
+            sql_insert_string = f"""INSERT INTO {self.db_table} VALUES (
+                    %(time)s,
+                    %(web_url)s,
+                    %(http_status)s,
+                    %(resp_time)s,
+                    %(regex_match)s
+                );
+            """
+            try:
+                with self.db_connect.cursor() as db_cursor:
+                    log.debug(
+                        "Copying metrics from metrics_stringIO to DB with psycopg2.extras.execute_batch()"
+                    )
+                    psycopg2.extras.execute_batch(db_cursor, sql_insert_string, metrics)
+            except (psycopg2.Error, Exception):
+                log.exception("Could not insert metrics in DB")
+                raise
+            else:
+                log.info("Metrics inserted in DB")
+        else:
+            log.info("Nothing to insert in DB")
+
+    def insert_metrics_copy(self, metrics: list[dict]) -> None:
+        """Store a list of dictionary elements (the collected web metrics) in DB
+        * Implementation is based on io.StringIO() and psycopg2.cursor().copy_from() based on:
             Fastest Way to Load Data Into PostgreSQL Using Python,
             https://hakibenita.com/fast-load-data-python-postgresql#copy-data-from-a-string-iterator-with-buffer-size
         * We considered to use mmap, instead io.StringIO(), because it's iterable and Kernel system calls handel file
         data in memory. However, mmap.mmap.read() returns bytes and it's necessary to extend the class for decode them
         to strings
+
         Args:
             metrics (list[dict]): List of web metrics to store
         """
-        # TODO: Analize the viability to substitue io.StringIO() with mmap.mmap()
+        # TODO: Analyze the viability to substitute io.StringIO() with mmap.mmap()
 
-        log.debug(f"Inserting, in DB, metrics:\n\t{metrics}")
+        log.debug(f"Copying, in DB, metrics:\n\t{metrics}")
         metrics_stringIO = io.StringIO()
         for metric_dict in metrics:
             metric_csv = ",".join(map(self.clean_values, metric_dict.values())) + "\n"
