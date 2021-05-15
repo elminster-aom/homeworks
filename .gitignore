@@ -118,6 +118,7 @@ env.bak/
 venv.bak/
 tests/service.cert
 tests/service.key
+tests/ca.pem
 
 # Spyder project settings
 .spyderproject
