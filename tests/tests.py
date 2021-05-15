@@ -3,10 +3,10 @@ needed resources for our web-monitoring application
 """
 
 import pytest
-import src.config as config
 import traceback
-from src.communication_manager import Communication_manager
-from src.store_manager import Store_manager
+from homeworks import config
+from homeworks.communication_manager import Communication_manager
+from homeworks.store_manager import Store_manager
 
 
 def test_kafka_resources():

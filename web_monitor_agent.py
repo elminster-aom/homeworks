@@ -9,9 +9,9 @@ and publishes (Producer) it to a Kafka topic:
 
 # import daemon
 import sys
-import src.config as config
-import src.logging_console as logging_console
-from src.get_request_thread import Get_request_thread
+from homeworks import config
+from homeworks import logging_console
+from homeworks.get_request_thread import Get_request_thread
 
 log = logging_console.getLogger("homeworks")
 

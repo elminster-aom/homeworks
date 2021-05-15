@@ -5,7 +5,7 @@ import threading
 import time
 from . import config
 from . import logging_console
-from src.communication_manager import Communication_manager
+from .communication_manager import Communication_manager
 
 # See: How to create tzinfo when I have UTC offset? https://stackoverflow.com/a/28270767
 from dateutil import tz
@@ -14,6 +14,7 @@ log = logging_console.getLogger("homeworks")
 
 
 class Get_request_thread(threading.Thread):
+    # TODO: Consider using a combination of asyncio and aiohttp instead of threading, see issue #7
     def __init__(self, urls: list[str]):
         threading.Thread.__init__(self)
         self.sampling_data = self.initialize_sampling_data(urls)
