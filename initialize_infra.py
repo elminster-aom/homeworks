@@ -24,15 +24,10 @@ def main() -> int:
     result = 0
 
     # Initialize and validate DB
-    store_manager = None
-    try:
-        store_manager = Store_manager()
-        store_manager.initialize_metrics_store()
-        is_db_ok = store_manager.validate_metric_store()
-    # except is not needed, if any it can be raised, see: https://www.reddit.com/r/learnpython/comments/45erlq/is_it_okay_to_use_tryfinally_without_except/czxk5bk?utm_source=share&utm_medium=web2x&context=3
-    finally:
-        if store_manager:
-            store_manager.close()
+    store_manager = Store_manager()
+    store_manager.initialize_metrics_store()
+    is_db_ok = store_manager.validate_metric_store()
+
     if not is_db_ok:
         result += 1
 
