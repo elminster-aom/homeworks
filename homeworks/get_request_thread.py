@@ -15,7 +15,19 @@ log = logging_console.getLogger("homeworks")
 
 class Get_request_thread(threading.Thread):
     # TODO: Consider using a combination of asyncio and aiohttp instead of threading, see issue #7
-    def __init__(self, urls: list[str]):
+    def __init__(self, urls: list[str]) -> None:
+        """Default constructor
+
+        Args:
+            urls (list[str]): [description]
+
+        Properties:
+            sampling_data (dict[str]): Structure with information to retrive from HTTP GET
+            metrics_sender: Object for producing data to Kafka
+            regex_pattern: Regex expresion to look for in http body
+            monitored_url_retry_secs (int): How long wait bettween one HTTP GET and the next one
+            get_request_timeout (int): TTP GET timeout
+        """
         threading.Thread.__init__(self)
         self.sampling_data = self.initialize_sampling_data(urls)
         self.metrics_sender = Communication_manager()
@@ -23,7 +35,6 @@ class Get_request_thread(threading.Thread):
             self.regex_pattern = re.compile(config.monitored_url_regex, re.MULTILINE)
         else:
             self.regex_pattern = None
-
         self.monitored_url_retry_secs = int(config.monitored_url_retry_secs)
         self.get_request_timeout = 15
         log.debug(f"{self.name}: Instantiated for URLs: {urls}")
@@ -89,7 +100,8 @@ class Get_request_thread(threading.Thread):
                 sample["regex_match"] = False
         # fmt: on
 
-    def run(self):
+    def run(self) -> None:
+        """Main method of this class: In a continuous loop, iterate over all defined URLs for monitoring them"""
         log.info(f"{self.name}: Starting monitoring")
         while True:
             for sample in self.sampling_data:
@@ -121,5 +133,6 @@ class Get_request_thread(threading.Thread):
             )
             time.sleep(self.monitored_url_retry_secs)
 
-    def publish_data(self, sample: dict):
+    def publish_data(self, sample: dict) -> None:
+        """Monitored information is sent to Kafka"""
         self.metrics_sender.produce_message(sample)
