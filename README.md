@@ -57,23 +57,27 @@ It initializes the environment, creating the required resources on Kafka and Pos
 $ git clone git@github.com:elminster-aom/homeworks.git
 ```
 2. Ensure that you have the right version of Python (v3.9, see below)
-3. Create a Python Virtual Environment and install required packages, e.g.:
+3. Create and activate Python Virtual Environment and install required packages, e.g.:
 ```shell
 $ python3 -m venv homeworks \
 && source homeworks/bin/activate \
 && python3 -m pip install --requirement homeworks/requirements.txt
+```
+4. Move into the new environment:
+```shell
+$ cd homeworks
 ```
 
 Further details on [Installing packages using pip and virtual environments](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments)
 
 ## How to set up and run
 1. Create (if doesn't exist already) a Kafka and PostgresSQL service ([aiven.io] is an interesting option)
-2. All available settings are based on an environment variables file in the home of our application. For its creation you can use this template: [env_example](https://github.com/elminster-aom/homeworks/blob/main/docs/env_example), e.g.:
+2. In the case of Kafka, you need to download files for authentication process. Where to find them and where set their path is described bellow, in **.env** section
+3. All available settings are based on an environment variables file in the home of our application. For its creation you can use this template: [env_example](https://github.com/elminster-aom/homeworks/blob/main/docs/env_example), e.g.:
 ```shell
-$ wget https://github.com/elminster-aom/homeworks/blob/main/docs/env_example 
-$ nano env_example
-# For information of its parameters, see below
-$ mv env_example .env
+$ cp docs/env_example .env
+$ nano .env
+# For information of its parameters, see .env section below
 $ chmod 0600 .env
 ```
 3. Run `initialize_infra.py` for initializing the infrastructure _\*_
@@ -93,13 +97,14 @@ _\*_ It needs to be run only once per environment, for initialization reasons
 _\*\*_ They can run on the same server or different ones
 
 ## Local validation tests
-They can be run like:
+Once completed above section, **How to install**. Tests can be run like:
 ```shell
-$ cd homeworks
-$ source bin/activate
+# Validate that sensitive data is protected
+$ ./tests/security_test1.sh
+$ ./tests/security_test2.sh
 
 # Validate that infrastructure is properly created
-$ python3 -m pytest tests.py
+$ python3 -m pytest tests/tests.py
 
 # Validate that all parts work together: URL monitoring, Kafka communication and DB storing
 $ ./tests/integration_test.sh
@@ -107,10 +112,10 @@ $ ./tests/integration_test.sh
 
 ### .env
 * **_WORKSPACE_PATH**: Full path to the project (e.g.: `/home/user1/homeworks`)
-* **KAFKA_ACCESS_CERTIFICATE**: Full path to the Kafka access certificate (e.g.: `${_WORKSPACE_PATH}/tests/service.cert`), available on your [Aiven console](https://console.aiven.io/): _Services -> \<Your Kafka\> -> Overview -> Access Certificate_
-IMPORTANT! (Although it's encrypted) Do not forget to set *service.cert* to read-only for file owner and exclude it from git repository.
-* **KAFKA_ACCESS_KEY**: Full path to the Kafka access key (e.g.: `${_WORKSPACE_PATH}/tests/service.key`), available on your [Aiven console](https://console.aiven.io/): _Services -> \<Your Kafka\> -> Overview -> Access Key_
-IMPORTANT! Do not forget to set *service.key* to read-only for file owner and exclude it from git repository.
+* **KAFKA_ACCESS_CERTIFICATE**: Full path to the Kafka access certificate (e.g.: `${_WORKSPACE_PATH}/tests/service.cert`), available on your [Aiven console](https://console.aiven.io/): _Services -> \<Your Kafka\> -> Overview -> Access Certificate_ 
+IMPORTANT! (Although it's encrypted) Do not forget to set *service.cert* to read-only for file owner (`chmod 0600 service.cert`) and exclude it from git repository.
+* **KAFKA_ACCESS_KEY**: Full path to the Kafka access key (e.g.: `${_WORKSPACE_PATH}/tests/service.key`), available on your [Aiven console](https://console.aiven.io/): _Services -> \<Your Kafka\> -> Overview -> Access Key_ 
+IMPORTANT! Do not forget to set *service.key* to read-only for file owner (`chmod 0600 service.key`) and exclude it from git repository.
 * **KAFKA_CA_CERTIFICATE**: Full path to the Kafka access certificate (e.g.: `${_WORKSPACE_PATH}/tests/ca.pem`), available on your [Aiven console](https://console.aiven.io/): _Services -> \<Your Kafka\> -> Overview -> CA Certificate_
 * **KAFKA_HOST**: Kafka hostname (e.g.: `kafka.aivencloud.com`), available on your [Aiven console](https://console.aiven.io/): _Services -> \<Your Kafka\> -> Overview -> Host_
 * **KAFKA_PORT**: Kafka TCP listener port (e.g.: `2181`), available on your [Aiven console](https://console.aiven.io/): _Services -> \<Your Kafka\> -> Overview -> Port_
@@ -133,11 +138,8 @@ IMPORTANT! Do not forget to set *service.key* to read-only for file owner and ex
 * Kafka 2.7.0
 * PostgresSQL 13.2
 * Python 3.9.4
-* TimesacleDB 2.1
-3. For a detailed list of Python modules check out the [requirements.txt](https://github.com/elminster-aom/homeworks/blob/main/requirements.txt). It can be used like:
-```shell
-pip3 install --requirement requirements.txt
-```
+* TimescaleDB 2.1
+3. For a detailed list of Python modules check out the [requirements.txt](https://github.com/elminster-aom/homeworks/blob/main/requirements.txt)
 
 ## Areas of improvement
 Review the list of [TODOs](https://github.com/elminster-aom/homeworks/blob/main/docs/TODOS.md)
@@ -150,8 +152,9 @@ I would like to reference some useful information sources which have been crucia
 * [except is not needed, if any it can be raised](https://www.reddit.com/r/learnpython/comments/45erlq/is_it_okay_to_use_tryfinally_without_except/czxk5bk?utm_source=share&utm_medium=web2x&context=3)
 * [Reference about enable_auto_commit=False](https://www.thebookofjoel.com/python-kafka-consumers)
 * [How to create tzinfo when I have UTC offset?](https://stackoverflow.com/a/28270767)
-* [Fastest Way to Load Data Into PostgreSQL Using Python](https://hakibenita.com/fast-load-data-python-postgresql#copy-data-from-a-string-iterator-with-buffer-size)
+* [Fastest Way to Load Data Into PostgreSQL Using Python](https://hakibenita.com/fast-load-data-python-postgresql)
 * [Getting started with TimescaleDB in Aiven for PostgreSQL](https://help.aiven.io/en/articles/1752157-getting-started-with-timescaledb-in-aiven-for-postgresql)
 * [3 Libraries You Should Know to Master Apache Kafka in Python](https://towardsdatascience.com/3-libraries-you-should-know-to-master-apache-kafka-in-python-c95fdf8700f2)
 * [How to create topics if it does not exists in Kafka dynamically using kafka-python](https://stackoverflow.com/a/55494337)
 * [Python Kafka Consumers: at-least-once, at-most-once, exactly-once](https://www.thebookofjoel.com/python-kafka-consumers)
+* [PEP 612 -- Parameter Specification Variables](https://www.python.org/dev/peps/pep-0612/)
