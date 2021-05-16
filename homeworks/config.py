@@ -1,4 +1,8 @@
-"""All parametrization for our monintoring tool is centralized here
+"""Based on the information (settings) present in .env,
+config.py process and make available this information to
+rest of code
+
+It's important to keep this module free of monitoring logic
 """
 # TODO: Use a more secure storage for secrets (e.g. hashicorp vault), currently security is implemented as read-only access for file-owner on .env
 # TODO: Encrypt password after using them (accessing them with a method) so that they have less chance to appear clear-text, e.g. with system dump

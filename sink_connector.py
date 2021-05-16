@@ -5,9 +5,9 @@
 
 # import daemon
 import sys
-import src.logging_console as logging_console
-from src.communication_manager import Communication_manager
-from src.store_manager import Store_manager
+from homeworks import logging_console
+from homeworks.communication_manager import Communication_manager
+from homeworks.store_manager import Store_manager
 
 log = logging_console.getLogger("homeworks")
 
