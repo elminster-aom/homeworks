@@ -7,6 +7,7 @@ This application tries to resolve a hypothetical request, developing a monitor t
 * error code returned
 * pattern that is expected to be found on the page
 2. Produces corresponding metrics and passes these events through a [Kafka](https://kafka.apache.org/) instance into a [PostgreSQL](https://www.postgresql.org/) database
+3. Nothing to add
 
 #### Scenario
 * These components may run in different systems
