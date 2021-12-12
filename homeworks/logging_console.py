@@ -46,6 +46,7 @@ def init_logging():
             # non-zero return means we log this message
             return 1 if record.levelno == self.level else 0
 
+        
     class IsNotEqualFilter(logging.Filter):
         def __init__(self, level, name=""):
             logging.Filter.__init__(self, name)
@@ -55,6 +56,7 @@ def init_logging():
             # non-zero return means we log this message
             return 1 if record.levelno != self.level else 0
 
+        
     logging_handler_out = logging.StreamHandler(sys.stdout)
     logging_handler_out.addFilter(IsEqualFilter(logging.INFO))
     log.addHandler(logging_handler_out)
